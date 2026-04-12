@@ -1,0 +1,665 @@
+import { useState, useEffect, useRef } from "react";
+
+const OWNER_WA = "255674695549";
+const BRAND    = "#003366";
+const GOLD     = "#C9A84C";
+
+const DEFAULT_TIERS = {
+  silver:{ id:"silver",level:1,name:"BASIC ADS",           sub:"Silver",    color:"#94a3b8",icon:"🥈",border:"rgba(148,163,184,0.35)" },
+  green: { id:"green", level:2,name:"BUSINESS GROWTH",     sub:"Green",     color:"#22c55e",icon:"🟢",border:"rgba(34,197,94,0.35)" },
+  gold:  { id:"gold",  level:3,name:"PREMIUM MENTORSHIP",  sub:"Gold",      color:GOLD,     icon:"🥇",border:`rgba(201,168,76,0.4)` },
+  royal: { id:"royal", level:4,name:"CORPORATE MANAGEMENT",sub:"Royal Blue",color:"#60a5fa",icon:"👑",border:"rgba(96,165,250,0.4)" },
+};
+
+const DEFAULT_PACKAGES = [
+  { tier:"silver", price:"TSh 50,000",  period:"/mwezi", popular:false, image:"", desc:"Pakiti bora ya kuanza biashara yako mtandaoni kwa gharama nafuu.", features:["Facebook Ads x3/wiki","Picha 5/mwezi","Ripoti ya mwezi","WhatsApp Support","Masomo Level 1"] },
+  { tier:"green",  price:"TSh 120,000", period:"/mwezi", popular:true,  image:"", desc:"Pakiti maarufu kwa biashara zinazotaka kukua haraka na kufikia wateja wengi.", features:["FB + Instagram Ads","Picha 15 + Video 2","Ripoti ya wiki","Priority Support","Masomo Level 1 & 2"] },
+  { tier:"gold",   price:"TSh 300,000", period:"/mwezi", popular:false, image:"", desc:"Huduma ya premium yenye Account Manager wako mwenyewe na ripoti kila siku.", features:["Majukwaa Yote","Picha + Video Unlimited","Account Manager","Ripoti Kila Siku","Masomo Level 1–3"] },
+  { tier:"royal",  price:"TSh 800,000", period:"/mwezi", popular:false, image:"", desc:"Suluhisho kamili la kampuni kubwa na mfumo wa corporate dashboard.", features:["Kila kitu cha Gold","Corporate Dashboard","Team Training","WhatsApp Bot","Analytics","Masomo Yote"] },
+];
+
+const DEFAULT_LESSONS = [
+  { id:1, tier:"silver", title:"Utangulizi wa Facebook Ads",      dur:"12:30", views:"2.1K", desc:"Jinsi ya kuanza matangazo ya Facebook kwa biashara yako kutoka sifuri kabisa.", videoUrl:"" },
+  { id:2, tier:"silver", title:"Kuunda Picha ya Tangazo Bora",    dur:"08:45", views:"1.8K", desc:"Mbinu za kuunda picha za kuvutia kwa Canva na tools nyingine za bure.", videoUrl:"" },
+  { id:3, tier:"silver", title:"Target Audience — Chaguo Sahihi", dur:"10:15", views:"3.2K", desc:"Jifunza jinsi ya kuchagua hadhira sahihi kwa matangazo yako.", videoUrl:"" },
+  { id:4, tier:"green",  title:"Facebook Pixel Setup ya Pro",      dur:"25:10", views:"980",  desc:"Setup kamili ya Facebook Pixel kwa tracking ya juu ya mauzo yako.", videoUrl:"" },
+  { id:5, tier:"green",  title:"Retargeting Campaigns",            dur:"32:45", views:"756",  desc:"Jinsi ya kuwalenga tena watu waliokwisha tembelea tovuti au kurasa yako.", videoUrl:"" },
+  { id:6, tier:"green",  title:"Instagram Ads Mastery",            dur:"28:00", views:"1.1K", desc:"Mkakati kamili wa Instagram Ads unaofanya kazi Tanzania.", videoUrl:"" },
+  { id:7, tier:"gold",   title:"Google Ads Step by Step",          dur:"45:00", views:"870",  desc:"Guide kamili ya kuunda Google Search Ads kutoka mwanzo hadi matokeo ya kweli.", videoUrl:"" },
+  { id:8, tier:"gold",   title:"TikTok Ads Tanzania 2025",         dur:"38:20", views:"920",  desc:"Mkakati wa TikTok Ads unaofanya kazi kwa biashara za Tanzania 2025.", videoUrl:"" },
+  { id:9, tier:"gold",   title:"Email Marketing Automation",       dur:"28:15", views:"670",  desc:"Jenga mfumo wa email marketing unaouza ukiwa umelala.", videoUrl:"" },
+  { id:10,tier:"royal",  title:"Analytics & ROI Dashboard",        dur:"50:00", views:"340",  desc:"Pima matokeo ya matangazo yako na ufanye maamuzi ya kisayansi.", videoUrl:"" },
+  { id:11,tier:"royal",  title:"Corporate Ad Strategy Tanzania",   dur:"60:00", views:"210",  desc:"Mkakati kamili wa matangazo kwa makampuni makubwa Tanzania.", videoUrl:"" },
+];
+
+function getYTId(url) {
+  const m = (url||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+const TESTIMONIALS = [
+  { name:"Mama Pendo",   city:"Dar es Salaam",text:"Mauzo yangu yameongezeka mara 3 baada ya kutumia huduma hii!",stars:5,e:"🛍️" },
+  { name:"Bwana Khalid", city:"Mwanza",       text:"Growth package imenisaidia kupata wateja 200+ kwa mwezi mmoja.",stars:5,e:"📈" },
+  { name:"Grace Mollel", city:"Arusha",       text:"Professional sana. Picha na video za hali ya juu kabisa!",stars:5,e:"🎬" },
+  { name:"Hassan Juma",  city:"Dodoma",       text:"Thamani yake ni kubwa mno. Ninaipendekeza kwa kila mtu.",stars:5,e:"💪" },
+  { name:"Amina Saleh",  city:"Zanzibar",     text:"Facebook Ads zao zimeleta wateja hata wa nje ya Tanzania!",stars:5,e:"🌍" },
+  { name:"Peter Msigwa", city:"Morogoro",     text:"Team yao inajibu haraka sana. Support bora kuliko wote.",stars:5,e:"🏆" },
+];
+
+function readStore() {
+  try { const r = localStorage.getItem("sat_store"); return r ? JSON.parse(r) : null; } catch { return null; }
+}
+function waURL(phone, msg) { return `https://wa.me/${phone.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`; }
+function getTiers()    { const s = readStore(); return s?.tiers    || DEFAULT_TIERS; }
+function getLessons()  { const s = readStore(); return s?.lessons  || DEFAULT_LESSONS; }
+function getPackages() { const s = readStore(); return s?.packages || DEFAULT_PACKAGES; }
+
+// ── WhatsApp SVG Icon ─────────────────────────────────
+const WAIcon = ({ size=26, color="#fff" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+);
+
+// ── Splash ────────────────────────────────────────────
+function Splash({ onDone }) {
+  const [pct, setPct] = useState(0);
+  const store = readStore();
+  useEffect(() => {
+    const s = Date.now();
+    const iv = setInterval(() => {
+      const p = Math.min(100, ((Date.now()-s)/3000)*100);
+      setPct(p);
+      if (p >= 100) { clearInterval(iv); setTimeout(onDone, 200); }
+    }, 30);
+    return () => clearInterval(iv);
+  }, []);
+  return (
+    <div style={{ position:"fixed", inset:0, background:BRAND, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", zIndex:9999, fontFamily:"system-ui,sans-serif", padding:"24px" }}>
+      <div style={{ width:"110px", height:"110px", background:"rgba(255,255,255,0.1)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", border:`3px solid ${GOLD}`, marginBottom:"32px", boxShadow:`0 0 60px ${GOLD}44`, overflow:"hidden" }}>
+        {store?.logo
+          ? <img src={store.logo} alt="logo" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+          : <span style={{ fontSize:"54px" }}>📡</span>}
+      </div>
+      <h1 style={{ color:"#fff", fontWeight:900, fontSize:"clamp(1.3rem,5vw,2rem)", textAlign:"center", marginBottom:"8px" }}>
+        Karibu {store?.brandName || "Sponsored Ads Tanzania"}
+      </h1>
+      <p style={{ color:GOLD, fontSize:"13px", letterSpacing:"4px", marginBottom:"52px" }}>DIGITAL MARKETING EXPERTS</p>
+      <div style={{ width:"240px", height:"5px", background:"rgba(255,255,255,0.15)", borderRadius:"10px", overflow:"hidden" }}>
+        <div style={{ height:"100%", width:`${pct}%`, background:`linear-gradient(90deg,${GOLD},#fff)`, transition:"width 0.1s linear", borderRadius:"10px" }}/>
+      </div>
+      <p style={{ color:"rgba(255,255,255,0.4)", fontSize:"13px", marginTop:"14px" }}>Inapakia...</p>
+    </div>
+  );
+}
+
+// ── Login ─────────────────────────────────────────────
+function Login({ onLogin }) {
+  const [phone, setPhone]   = useState("");
+  const [name, setName]     = useState("");
+  const [err, setErr]       = useState("");
+  const store = readStore();
+
+  const fullPhone  = "+255" + phone.replace(/\D/g,"").slice(0,9);
+  const existing   = phone.length === 9 ? store?.users?.find(u => u.phone === fullPhone) : null;
+  const isReturning = !!existing;
+
+  function submit() {
+    if (phone.replace(/\D/g,"").length < 9) { setErr("Digits 9 za simu zinahitajika"); return; }
+    if (!isReturning && !name.trim()) { setErr("Tafadhali jaza jina lako kamili"); return; }
+    const user = existing
+      ? { ...existing, isKnown:true }
+      : { id:Date.now(), name:name.trim(), phone:fullPhone, tier:"silver", active:true, isKnown:false };
+    onLogin(user);
+  }
+
+  const inp = { width:"100%", padding:"16px 15px", borderRadius:"14px", border:"1.5px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.08)", color:"#fff", fontSize:"16px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" };
+  const tiers = store?.tiers || DEFAULT_TIERS;
+  const exTier = existing ? (tiers[existing.tier] || DEFAULT_TIERS.silver) : null;
+
+  return (
+    <div style={{ minHeight:"100vh", background:BRAND, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"24px", fontFamily:"system-ui,sans-serif" }}>
+      <div style={{ width:"82px", height:"82px", background:"rgba(255,255,255,0.1)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", border:`2px solid ${GOLD}`, marginBottom:"20px", overflow:"hidden" }}>
+        {store?.logo
+          ? <img src={store.logo} alt="logo" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+          : <span style={{ fontSize:"38px" }}>📡</span>}
+      </div>
+      <h1 style={{ color:"#fff", fontWeight:900, fontSize:"22px", textAlign:"center", marginBottom:"6px" }}>
+        {store?.brandName || "SPONSORED ADS TANZANIA"}
+      </h1>
+      <p style={{ color:"rgba(255,255,255,0.5)", fontSize:"14px", marginBottom:"36px" }}>Ingia ili uendelee</p>
+
+      <div style={{ width:"100%", maxWidth:"400px", background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"24px", padding:"30px 22px" }}>
+
+        {/* Phone field — always shown */}
+        <div style={{ marginBottom:"18px" }}>
+          <label style={{ color:"rgba(255,255,255,0.6)", fontSize:"12px", fontWeight:700, letterSpacing:"1.5px", display:"block", marginBottom:"9px" }}>NAMBA YA SIMU</label>
+          <div style={{ display:"flex" }}>
+            <div style={{ padding:"16px 13px", background:"rgba(255,255,255,0.15)", borderRadius:"14px 0 0 14px", color:"#fff", fontWeight:800, fontSize:"16px", border:"1.5px solid rgba(255,255,255,0.15)", borderRight:"none", display:"flex", alignItems:"center", whiteSpace:"nowrap" }}>+255</div>
+            <input style={{ ...inp, borderRadius:"0 14px 14px 0", borderLeft:"none", flex:1 }} placeholder="674 695 549" value={phone}
+              onChange={e => { setPhone(e.target.value.replace(/\D/g,"").slice(0,9)); setErr(""); }}
+              maxLength={9} onKeyDown={e => e.key==="Enter" && submit()}/>
+          </div>
+        </div>
+
+        {/* Returning user card */}
+        {isReturning && (
+          <div style={{ background:`${exTier.color}15`, border:`1.5px solid ${exTier.color}44`, borderRadius:"16px", padding:"16px", marginBottom:"18px", display:"flex", alignItems:"center", gap:"14px" }}>
+            <div style={{ width:"50px", height:"50px", background:`linear-gradient(135deg,${BRAND},#005599)`, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, color:"#fff", fontSize:"22px", flexShrink:0, border:`2px solid ${exTier.color}` }}>
+              {existing.name[0]}
+            </div>
+            <div style={{ flex:1 }}>
+              <div style={{ color:"#4ade80", fontSize:"12px", fontWeight:700, marginBottom:"2px" }}>✅ Umekumbukwa!</div>
+              <div style={{ fontWeight:900, fontSize:"16px" }}>{existing.name}</div>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:"4px", background:`${exTier.color}18`, borderRadius:"20px", padding:"2px 9px", marginTop:"4px" }}>
+                <span style={{ fontSize:"11px" }}>{exTier.icon}</span>
+                <span style={{ color:exTier.color, fontSize:"11px", fontWeight:700 }}>{exTier.name}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* New user — show name field */}
+        {!isReturning && phone.length === 9 && (
+          <div style={{ marginBottom:"18px" }}>
+            <div style={{ background:"rgba(201,168,76,0.1)", border:"1px solid rgba(201,168,76,0.25)", borderRadius:"12px", padding:"11px 14px", marginBottom:"14px" }}>
+              <div style={{ color:GOLD, fontSize:"13px", fontWeight:700 }}>👤 Karibu! Jisajili kwa mara ya kwanza</div>
+            </div>
+            <label style={{ color:"rgba(255,255,255,0.6)", fontSize:"12px", fontWeight:700, letterSpacing:"1.5px", display:"block", marginBottom:"9px" }}>JINA LAKO KAMILI</label>
+            <input style={inp} placeholder="mf. Amina Saleh" value={name} onChange={e => { setName(e.target.value); setErr(""); }} onKeyDown={e => e.key==="Enter" && submit()}/>
+          </div>
+        )}
+
+        {err && <div style={{ background:"rgba(239,68,68,0.18)", border:"1px solid rgba(239,68,68,0.4)", borderRadius:"12px", padding:"12px 15px", color:"#fca5a5", fontSize:"14px", marginBottom:"16px" }}>⚠️ {err}</div>}
+
+        <button onClick={submit} style={{ width:"100%", padding:"17px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"14px", color:"#000", fontWeight:900, fontSize:"17px", cursor:"pointer", fontFamily:"inherit" }}>
+          {isReturning ? `Ingia — ${existing.name.split(" ")[0]} →` : "Ingia Sasa →"}
+        </button>
+        <p style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px", textAlign:"center", marginTop:"14px" }}>
+          Msaada? <a href={waURL(OWNER_WA,"Habari! Ninahitaji msaada wa kuingia.")} target="_blank" rel="noopener noreferrer" style={{ color:GOLD, fontWeight:700 }}>Piga WhatsApp</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── OTP Unlock Modal ──────────────────────────────────
+function UnlockModal({ user, onClose, onSuccess }) {
+  const [code, setCode] = useState("");
+  const [err, setErr] = useState("");
+  const [ok, setOk] = useState(false);
+
+  function tryUnlock() {
+    const store = readStore();
+    const otp = store?.otps?.[user.id];
+    if (!otp) { setErr("Hakuna namba iliyotolewa kwa akaunti yako. Wasiliana na admin."); return; }
+    if (otp.used) { setErr("Namba hii imeshakutumiwa. Omba mpya kwa admin."); return; }
+    if (Date.now() > otp.expires) { setErr("Namba imekwisha muda. Omba mpya kwa admin."); return; }
+    if (otp.code.toUpperCase() !== code.trim().toUpperCase()) { setErr("Namba si sahihi. Angalia vizuri uliyopewa."); return; }
+    store.otps[user.id].used = true;
+    try { localStorage.setItem("sat_store", JSON.stringify(store)); } catch {}
+    const updatedUser = store.users?.find(u => u.id === user.id);
+    setOk(true);
+    setTimeout(() => { onSuccess(updatedUser || user); onClose(); }, 1600);
+  }
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.88)", zIndex:800, display:"flex", alignItems:"center", justifyContent:"center", padding:"24px" }} onClick={onClose}>
+      <div style={{ background:"#0d1b2e", border:`2px solid ${GOLD}55`, borderRadius:"24px", padding:"30px 22px", width:"100%", maxWidth:"380px" }} onClick={e => e.stopPropagation()}>
+        {ok ? (
+          <div style={{ textAlign:"center", padding:"20px 0" }}>
+            <div style={{ fontSize:"60px", marginBottom:"16px" }}>🎉</div>
+            <div style={{ fontWeight:900, fontSize:"22px", color:"#4ade80", marginBottom:"8px" }}>Umefunguliwa!</div>
+            <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"15px" }}>Sasa unaweza kufikia content yako.</div>
+          </div>
+        ) : (
+          <>
+            <div style={{ textAlign:"center", marginBottom:"22px" }}>
+              <div style={{ fontSize:"52px", marginBottom:"12px" }}>🔑</div>
+              <div style={{ fontWeight:900, fontSize:"22px", marginBottom:"8px" }}>Ingiza Namba Yako</div>
+              <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"14px", lineHeight:1.6 }}>Omba namba kwa admin kupitia WhatsApp, kisha uiingize hapa.</div>
+            </div>
+            <input value={code} onChange={e => { setCode(e.target.value.toUpperCase()); setErr(""); }}
+              placeholder="mf. SAT-AB3CD4"
+              style={{ width:"100%", padding:"17px", background:"rgba(255,255,255,0.07)", border:`2px solid ${GOLD}55`, borderRadius:"14px", color:GOLD, fontSize:"18px", fontWeight:900, letterSpacing:"4px", outline:"none", fontFamily:"monospace", textAlign:"center", boxSizing:"border-box", marginBottom:"12px" }}
+              onKeyDown={e => e.key==="Enter" && tryUnlock()}/>
+            {err && <div style={{ color:"#fca5a5", fontSize:"13px", marginBottom:"12px", textAlign:"center", lineHeight:1.5 }}>⚠️ {err}</div>}
+            <button onClick={tryUnlock} style={{ width:"100%", padding:"16px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"14px", color:"#000", fontWeight:900, fontSize:"17px", cursor:"pointer", fontFamily:"inherit", marginBottom:"10px" }}>
+              Fungua 🔓
+            </button>
+            <button onClick={onClose} style={{ width:"100%", padding:"13px", background:"transparent", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"12px", color:"rgba(255,255,255,0.5)", cursor:"pointer", fontFamily:"inherit", fontSize:"14px" }}>Funga</button>
+            <div style={{ marginTop:"16px", textAlign:"center" }}>
+              <a href={waURL(OWNER_WA,"Habari! Ninahitaji namba ya kufungua premium content yangu.")} target="_blank" rel="noopener noreferrer" style={{ color:GOLD, fontSize:"13px", fontWeight:700, textDecoration:"none" }}>
+                📲 Omba namba kwa admin →
+              </a>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Lesson Card ───────────────────────────────────────
+function LessonCard({ lesson, userTier, tiers }) {
+  const [playing, setPlaying] = useState(false);
+  const tier = tiers[lesson.tier] || DEFAULT_TIERS[lesson.tier];
+  const userLevel = (tiers[userTier] || DEFAULT_TIERS[userTier])?.level || 1;
+  const locked = tier.level > userLevel;
+
+  return (
+    <div style={{ background:"#0d1b2e", border:`1.5px solid ${locked?"rgba(255,255,255,0.06)":tier.border}`, borderRadius:"20px", overflow:"hidden", marginBottom:"14px" }}>
+      <div style={{ background:locked?"#0a1020":`linear-gradient(135deg,${BRAND},#005599)`, padding:"20px 18px", display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:"12px" }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:"5px", background:`${tier.color}22`, border:`1px solid ${tier.color}44`, borderRadius:"20px", padding:"3px 10px", marginBottom:"8px" }}>
+            <span style={{ fontSize:"12px" }}>{tier.icon}</span>
+            <span style={{ color:tier.color, fontSize:"11px", fontWeight:700 }}>{tier.sub}</span>
+          </div>
+          <div style={{ color:locked?"rgba(255,255,255,0.35)":"#fff", fontWeight:800, fontSize:"17px", lineHeight:1.3 }}>{lesson.title}</div>
+          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:"13px", marginTop:"5px" }}>⏱ {lesson.dur} · 👁 {lesson.views}</div>
+        </div>
+        <div style={{ fontSize:"34px", flexShrink:0 }}>{locked ? "🔒" : "🎬"}</div>
+      </div>
+      <div style={{ padding:"16px 18px" }}>
+        <p style={{ color:"rgba(255,255,255,0.6)", fontSize:"14px", lineHeight:1.7, marginBottom:"14px" }}>{lesson.desc}</p>
+        {locked ? (
+          <a href={waURL(OWNER_WA,`Habari! Nataka kupanda hadi ${tier.name}. Niambie zaidi.`)} target="_blank" rel="noopener noreferrer"
+            style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", padding:"14px", background:`${tier.color}15`, border:`1.5px solid ${tier.border}`, borderRadius:"12px", color:tier.color, fontWeight:800, fontSize:"15px", textDecoration:"none" }}>
+            ⬆️ Panda hadi {tier.name}
+          </a>
+        ) : (
+          <>
+            <button onClick={() => setPlaying(p => !p)} style={{ width:"100%", padding:"14px", background:`linear-gradient(135deg,${BRAND},#005599)`, border:"none", borderRadius:"12px", color:"#fff", fontWeight:800, fontSize:"15px", cursor:"pointer", fontFamily:"inherit" }}>
+              {playing ? "⏸ Simamisha" : "▶ Tazama Sasa"}
+            </button>
+            {playing && (
+              <div style={{ marginTop:"12px", borderRadius:"12px", overflow:"hidden", background:"#000" }}>
+                {lesson.videoUrl ? (
+                  getYTId(lesson.videoUrl) ? (
+                    <div style={{ position:"relative", width:"100%", paddingBottom:"56.25%" }}>
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYTId(lesson.videoUrl)}?autoplay=1`}
+                        style={{ position:"absolute", inset:0, width:"100%", height:"100%", border:"none" }}
+                        allow="autoplay; encrypted-media; fullscreen"
+                        allowFullScreen
+                        title={lesson.title}
+                      />
+                    </div>
+                  ) : (
+                    <video
+                      src={lesson.videoUrl}
+                      controls
+                      autoPlay
+                      style={{ width:"100%", display:"block", borderRadius:"12px" }}
+                    />
+                  )
+                ) : (
+                  <div style={{ position:"relative", width:"100%", paddingBottom:"56.25%", background:"#000" }}>
+                    <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ fontSize:"44px", marginBottom:"12px" }}>🎬</div>
+                      <div style={{ color:"rgba(255,255,255,0.6)", fontSize:"14px", textAlign:"center", lineHeight:1.6, padding:"0 20px" }}>
+                        Video bado haijawekwa<br/>
+                        <span style={{ color:"rgba(255,255,255,0.25)", fontSize:"12px" }}>Admin ataongeza video hivi karibuni</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Settings Screen ───────────────────────────────────
+function SettingsScreen({ user, onLogout, onUpdate }) {
+  const [name, setName] = useState(user.name);
+  const [saved, setSaved] = useState(false);
+  const store = readStore();
+  const tiers = store?.tiers || DEFAULT_TIERS;
+  const t = tiers[user.tier] || DEFAULT_TIERS.silver;
+
+  function saveProfile() {
+    onUpdate({ ...user, name: name.trim() || user.name });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  const inp = { width:"100%", padding:"14px 15px", borderRadius:"12px", border:"1.5px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.07)", color:"#fff", fontSize:"15px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" };
+
+  return (
+    <div style={{ padding:"16px 16px 100px" }}>
+      {/* Profile card */}
+      <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"22px", marginBottom:"14px" }}>
+        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"16px" }}>👤 WASIFU WANGU</div>
+        <div style={{ display:"flex", alignItems:"center", gap:"14px", marginBottom:"20px" }}>
+          <div style={{ width:"64px", height:"64px", background:`linear-gradient(135deg,${BRAND},#005599)`, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, color:"#fff", fontSize:"26px", border:`2px solid ${t.color}` }}>
+            {user.name[0]}
+          </div>
+          <div>
+            <div style={{ fontWeight:800, fontSize:"18px" }}>{user.name}</div>
+            <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"14px" }}>{user.phone}</div>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:"5px", background:`${t.color}18`, border:`1px solid ${t.border}`, borderRadius:"20px", padding:"3px 10px", marginTop:"5px" }}>
+              <span>{t.icon}</span>
+              <span style={{ color:t.color, fontSize:"12px", fontWeight:700 }}>{t.name}</span>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginBottom:"14px" }}>
+          <label style={{ color:"rgba(255,255,255,0.5)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"7px" }}>BADILISHA JINA</label>
+          <input style={inp} value={name} onChange={e => setName(e.target.value)}/>
+        </div>
+        <button onClick={saveProfile} style={{ width:"100%", padding:"13px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"12px", color:"#000", fontWeight:900, fontSize:"15px", cursor:"pointer", fontFamily:"inherit" }}>
+          {saved ? "✅ Imehifadhiwa!" : "Hifadhi Mabadiliko"}
+        </button>
+      </div>
+
+      {/* Package/Tier info */}
+      <div style={{ background:"#0d1b2e", border:`1px solid ${t.border}`, borderRadius:"20px", padding:"22px", marginBottom:"14px" }}>
+        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"16px" }}>📦 PACKAGE YANGU</div>
+        <div style={{ display:"flex", alignItems:"center", gap:"14px", marginBottom:"16px" }}>
+          <span style={{ fontSize:"40px" }}>{t.icon}</span>
+          <div>
+            <div style={{ color:t.color, fontWeight:900, fontSize:"18px" }}>{t.name}</div>
+            <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"13px" }}>Level {t.level} Access</div>
+          </div>
+        </div>
+        <a href={waURL(OWNER_WA,`Habari! Nataka kupanda tier yangu. Sasa nipo ${t.name}. Niambie kuhusu package za juu zaidi.`)} target="_blank" rel="noopener noreferrer"
+          style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", padding:"13px", background:"rgba(37,211,102,0.1)", border:"1px solid rgba(37,211,102,0.25)", borderRadius:"12px", textDecoration:"none", color:"#4ade80", fontWeight:700, fontSize:"14px" }}>
+          <WAIcon size={18} color="#4ade80"/> Omba Upgrade
+        </a>
+      </div>
+
+      {/* App info */}
+      <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"22px", marginBottom:"14px" }}>
+        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>ℹ️ KUHUSU APP</div>
+        {[["Jina la App", store?.brandName||"Sponsored Ads Tanzania"],["Toleo la App","v2.0"],["Mawasiliano",`+${OWNER_WA}`]].map(([k,v]) => (
+          <div key={k} style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+            <span style={{ color:"rgba(255,255,255,0.5)", fontSize:"14px" }}>{k}</span>
+            <span style={{ color:"#fff", fontWeight:700, fontSize:"14px" }}>{v}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Support */}
+      <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"22px", marginBottom:"14px" }}>
+        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>📞 MSAADA</div>
+        <a href={waURL(OWNER_WA,`Habari! Mimi ni ${user.name} (${user.phone}). Ninahitaji msaada.`)} target="_blank" rel="noopener noreferrer"
+          style={{ display:"flex", alignItems:"center", gap:"12px", padding:"14px 16px", background:"rgba(37,211,102,0.1)", border:"1px solid rgba(37,211,102,0.25)", borderRadius:"12px", textDecoration:"none", color:"#4ade80", fontWeight:700, fontSize:"15px", marginBottom:"10px" }}>
+          <WAIcon size={22} color="#4ade80"/> Piga WhatsApp Support
+        </a>
+        <p style={{ color:"rgba(255,255,255,0.3)", fontSize:"13px", textAlign:"center" }}>Tunajibu 24/7 kupitia WhatsApp</p>
+      </div>
+
+      {/* Logout */}
+      <button onClick={onLogout} style={{ width:"100%", padding:"15px", background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)", borderRadius:"14px", color:"#f87171", fontWeight:900, fontSize:"16px", cursor:"pointer", fontFamily:"inherit" }}>
+        🚪 Toka (Logout)
+      </button>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+//  MAIN CUSTOMER APP
+// ══════════════════════════════════════════════════════
+export default function CustomerApp() {
+  const [phase, setPhase]         = useState("splash");
+  const [user, setUser]           = useState(null);
+  const [tab, setTab]             = useState("home");
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [bannerIdx, setBannerIdx] = useState(0);
+  const [, tick]                  = useState(0);
+
+  // Poll for admin changes every 3s
+  useEffect(() => {
+    const t = setInterval(() => {
+      tick(x => x+1);
+      if (user) {
+        const store = readStore();
+        const updated = store?.users?.find(u => u.id === user.id);
+        if (updated && updated.tier !== user.tier) setUser(u => ({...u, tier:updated.tier}));
+      }
+    }, 3000);
+    return () => clearInterval(t);
+  }, [user]);
+
+  useEffect(() => {
+    const t = setInterval(() => setBannerIdx(i => (i+1)%3), 4500);
+    return () => clearInterval(t);
+  }, []);
+
+  if (phase==="splash") return <Splash onDone={() => setPhase("auth")}/>;
+  if (phase==="auth")   return <Login  onLogin={u => { setUser(u); setPhase("app"); }}/>;
+
+  const store       = readStore();
+  const tiers       = store?.tiers || DEFAULT_TIERS;
+  const freshUser   = store?.users?.find(u => u.id === user?.id);
+  const cur         = freshUser || user;
+  const curTier     = tiers[cur.tier] || DEFAULT_TIERS.silver;
+  const waSupport   = waURL(OWNER_WA, `Habari! Mimi ni ${cur.name} (${cur.phone}). Ninahitaji msaada.`);
+  const brandName   = store?.brandName || "SPONSORED ADS TANZANIA";
+  const logo        = store?.logo;
+
+  const BANNERS = [
+    { label:"Ongeza Mauzo Yako Leo",   sub:"Huduma za matangazo ya hali ya juu", grad:`linear-gradient(135deg,${BRAND},#005599)` },
+    { label:"Special Offer — 20% OFF", sub:"Kwa wateja wapya wa mwezi huu",      grad:"linear-gradient(135deg,#7c2d12,#C9A84C)" },
+    { label:"Afrika Mashariki & Zaidi", sub:"Wateja kutoka mataifa mengi",        grad:"linear-gradient(135deg,#064e3b,#065f46)" },
+  ];
+
+  return (
+    <div style={{ background:"#050f1a", minHeight:"100vh", color:"#f0f0f0", fontFamily:"system-ui,sans-serif", maxWidth:"480px", margin:"0 auto", position:"relative" }}>
+
+      {showUnlock && <UnlockModal user={cur} onClose={() => setShowUnlock(false)} onSuccess={u => setUser(prev => ({...prev, tier:u?.tier||prev.tier}))}/>}
+
+      {/* HEADER */}
+      <header style={{ background:BRAND, padding:"14px 18px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, boxShadow:"0 4px 20px rgba(0,0,0,0.5)" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
+          <div style={{ width:"42px", height:"42px", background:"rgba(255,255,255,0.12)", borderRadius:"11px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"22px", border:`1px solid ${GOLD}33`, overflow:"hidden" }}>
+            {logo ? <img src={logo} alt="logo" style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span>📡</span>}
+          </div>
+          <div>
+            <div style={{ fontWeight:900, fontSize:"13px", letterSpacing:"0.5px", lineHeight:1 }}>{brandName.split(" ").slice(0,2).join(" ")}</div>
+            <div style={{ color:GOLD, fontSize:"9px", letterSpacing:"2px" }}>{brandName.split(" ").slice(2).join(" ")||"TANZANIA"}</div>
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:"9px" }}>
+          <button onClick={() => setShowUnlock(true)} style={{ background:`${GOLD}22`, border:`1px solid ${GOLD}44`, borderRadius:"20px", padding:"6px 13px", color:GOLD, fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>🔑 Unlock</button>
+          <div style={{ textAlign:"right" }}>
+            <div style={{ fontSize:"13px", fontWeight:700 }}>{cur.name.split(" ")[0]}</div>
+            <div style={{ color:curTier.color, fontSize:"11px", fontWeight:700 }}>{curTier.icon} {curTier.sub}</div>
+          </div>
+        </div>
+      </header>
+
+      <main style={{ paddingBottom:"90px" }}>
+
+        {/* ════ HOME ════ */}
+        {tab==="home" && (
+          <div>
+            {/* Welcome */}
+            <div style={{ margin:"14px 14px 0", background:`linear-gradient(135deg,${BRAND},#005599)`, borderRadius:"22px", padding:"20px 18px" }}>
+              <div style={{ color:GOLD, fontSize:"12px", fontWeight:700, marginBottom:"5px" }}>KARIBU TENA 👋</div>
+              <div style={{ fontWeight:900, fontSize:"22px", marginBottom:"4px" }}>Habari, {cur.name.split(" ")[0]}!</div>
+              <div style={{ color:"rgba(255,255,255,0.6)", fontSize:"15px", marginBottom:"14px" }}>Anza kukua biashara yako leo.</div>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:"6px", background:`${curTier.color}22`, border:`1px solid ${curTier.border}`, borderRadius:"20px", padding:"5px 13px" }}>
+                <span>{curTier.icon}</span>
+                <span style={{ color:curTier.color, fontSize:"13px", fontWeight:700 }}>{curTier.name}</span>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"10px", padding:"14px" }}>
+              {[["500+","Wateja Wetu"],["4","Packages"],["24/7","Support"]].map(([n,l]) => (
+                <div key={l} style={{ background:"#0d1b2e", border:"1px solid rgba(0,51,102,0.5)", borderRadius:"16px", padding:"16px 10px", textAlign:"center" }}>
+                  <div style={{ fontWeight:900, fontSize:"22px", color:GOLD }}>{n}</div>
+                  <div style={{ color:"rgba(255,255,255,0.45)", fontSize:"12px", marginTop:"4px", lineHeight:1.3 }}>{l}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Banner */}
+            <div style={{ padding:"0 14px 14px" }}>
+              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"10px" }}>📢 MATANGAZO MAALUM</div>
+              <div style={{ position:"relative", borderRadius:"20px", overflow:"hidden" }}>
+                <div style={{ background:BANNERS[bannerIdx].grad, padding:"32px 26px", minHeight:"145px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
+                  <div style={{ color:GOLD, fontSize:"11px", fontWeight:700, letterSpacing:"2px", marginBottom:"8px" }}>TANGAZO MAALUM</div>
+                  <div style={{ color:"#fff", fontWeight:900, fontSize:"21px", lineHeight:1.2, marginBottom:"7px" }}>{BANNERS[bannerIdx].label}</div>
+                  <div style={{ color:"rgba(255,255,255,0.6)", fontSize:"14px" }}>{BANNERS[bannerIdx].sub}</div>
+                </div>
+                <div style={{ position:"absolute", bottom:"12px", right:"14px", display:"flex", gap:"6px" }}>
+                  {BANNERS.map((_,i) => <div key={i} onClick={() => setBannerIdx(i)} style={{ width:i===bannerIdx?"20px":"7px", height:"7px", borderRadius:"4px", background:i===bannerIdx?"#fff":"rgba(255,255,255,0.3)", cursor:"pointer", transition:"all 0.3s" }}/>)}
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonials */}
+            <div style={{ padding:"0 14px" }}>
+              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"12px" }}>⭐ USHAHIDI WA WATEJA</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+                {TESTIMONIALS.map((t,i) => (
+                  <div key={i} style={{ background:"#0d1b2e", border:"1px solid rgba(0,51,102,0.4)", borderRadius:"20px", padding:"18px" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"10px" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
+                        <div style={{ width:"42px", height:"42px", background:`linear-gradient(135deg,${BRAND},#005599)`, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, color:"#fff", fontSize:"17px" }}>{t.name[0]}</div>
+                        <div>
+                          <div style={{ fontWeight:700, fontSize:"15px" }}>{t.name}</div>
+                          <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px" }}>📍 {t.city}</div>
+                        </div>
+                      </div>
+                      <span style={{ fontSize:"26px" }}>{t.e}</span>
+                    </div>
+                    <p style={{ color:"rgba(255,255,255,0.75)", fontSize:"15px", lineHeight:1.7, fontStyle:"italic", marginBottom:"10px" }}>"{t.text}"</p>
+                    <div style={{ display:"flex", gap:"2px" }}>{Array.from({length:t.stars}).map((_,s)=><span key={s} style={{ color:GOLD, fontSize:"17px" }}>★</span>)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ height:"18px" }}/>
+          </div>
+        )}
+
+        {/* ════ CATALOG ════ */}
+        {tab==="catalog" && (
+          <div style={{ padding:"14px" }}>
+            <div style={{ marginBottom:"24px" }}>
+              <div style={{ color:GOLD, fontSize:"11px", letterSpacing:"3px", fontWeight:700, marginBottom:"8px" }}>✦ PACKAGES ZETU</div>
+              <h2 style={{ fontWeight:900, fontSize:"26px", lineHeight:1.1, marginBottom:"9px" }}>Chagua Package Yako</h2>
+              <p style={{ color:"rgba(255,255,255,0.5)", fontSize:"15px", lineHeight:1.65 }}>Packages zote zinajumuisha ushauri wa bure wa wiki ya kwanza na support ya WhatsApp 24/7.</p>
+            </div>
+            {getPackages().map(pkg => {
+              const t = tiers[pkg.tier] || DEFAULT_TIERS[pkg.tier];
+              const key = pkg.id || pkg.tier;
+              const msg = `Habari! Mimi ni ${cur.name}. Nataka kujua zaidi kuhusu package ya ${t.name} (${pkg.price}${pkg.period}).`;
+              return (
+                <div key={key} style={{ background:"#0d1b2e", border:`2px solid ${t.border}`, borderRadius:"24px", overflow:"hidden", marginBottom:"18px", position:"relative" }}>
+                  {pkg.popular && <div style={{ position:"absolute", top:"16px", right:"16px", background:GOLD, color:"#000", fontSize:"11px", fontWeight:900, padding:"4px 13px", borderRadius:"20px", zIndex:2 }}>MAARUFU ⭐</div>}
+                  {/* Package Image */}
+                  {pkg.image && (
+                    <div style={{ width:"100%", height:"160px", overflow:"hidden" }}>
+                      <img src={pkg.image} alt={t.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                    </div>
+                  )}
+                  <div style={{ background:`linear-gradient(135deg,${t.color}15,transparent)`, padding:"24px 20px 16px" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"10px" }}>
+                      <span style={{ fontSize:"28px" }}>{t.icon}</span>
+                      <div>
+                        <div style={{ color:t.color, fontWeight:900, fontSize:"18px" }}>{t.name}</div>
+                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px" }}>Level {t.level}</div>
+                      </div>
+                    </div>
+                    {pkg.desc && (
+                      <p style={{ color:"rgba(255,255,255,0.6)", fontSize:"14px", lineHeight:1.6, marginBottom:"10px" }}>{pkg.desc}</p>
+                    )}
+                    <div style={{ display:"flex", alignItems:"baseline", gap:"5px" }}>
+                      <span style={{ color:"#fff", fontWeight:900, fontSize:"28px" }}>{pkg.price}</span>
+                      <span style={{ color:"rgba(255,255,255,0.4)", fontSize:"14px" }}>{pkg.period}</span>
+                    </div>
+                  </div>
+                  <div style={{ padding:"0 20px 20px" }}>
+                    <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", paddingTop:"16px", marginBottom:"18px" }}>
+                      {pkg.features.map(f => (
+                        <div key={f} style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"10px" }}>
+                          <div style={{ width:"20px", height:"20px", background:`${t.color}22`, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                            <span style={{ color:t.color, fontSize:"12px" }}>✓</span>
+                          </div>
+                          <span style={{ color:"rgba(255,255,255,0.75)", fontSize:"14px" }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <a href={waURL(OWNER_WA,msg)} target="_blank" rel="noopener noreferrer"
+                      style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", padding:"15px", borderRadius:"14px", textDecoration:"none", fontWeight:900, fontSize:"15px", color:pkg.tier==="gold"?"#000":"#fff", background:pkg.tier==="gold"?`linear-gradient(135deg,${GOLD},#f0c060)`:`linear-gradient(135deg,${BRAND},#005599)`, boxShadow:`0 6px 20px ${t.color}33` }}>
+                      <WAIcon size={18} color={pkg.tier==="gold"?"#000":"#fff"}/> Agiza Sasa — WhatsApp
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ════ LESSONS ════ */}
+        {tab==="lessons" && (
+          <div style={{ padding:"14px" }}>
+            <div style={{ background:`${curTier.color}12`, border:`1.5px solid ${curTier.border}`, borderRadius:"18px", padding:"16px 18px", marginBottom:"22px", display:"flex", alignItems:"center", gap:"12px" }}>
+              <span style={{ fontSize:"34px" }}>{curTier.icon}</span>
+              <div style={{ flex:1 }}>
+                <div style={{ color:curTier.color, fontWeight:900, fontSize:"15px" }}>{curTier.name}</div>
+                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"13px", marginTop:"2px" }}>Unafikia masomo Level 1–{curTier.level}</div>
+              </div>
+              <button onClick={() => setShowUnlock(true)} style={{ background:GOLD, border:"none", borderRadius:"10px", padding:"9px 14px", color:"#000", fontWeight:900, fontSize:"13px", cursor:"pointer", fontFamily:"inherit" }}>🔑 Fungua</button>
+            </div>
+
+            {Object.values(tiers).map(tier => {
+              const ls = getLessons().filter(l => l.tier === tier.id);
+              const locked = tier.level > curTier.level;
+              return (
+                <div key={tier.id} style={{ marginBottom:"28px" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"14px" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:"9px" }}>
+                      <span style={{ fontSize:"20px" }}>{tier.icon}</span>
+                      <div>
+                        <div style={{ fontWeight:800, fontSize:"15px", color:locked?"rgba(255,255,255,0.35)":"#fff" }}>{tier.name}</div>
+                        <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px" }}>Level {tier.level} · {ls.length} masomo {locked?"🔒":""}</div>
+                      </div>
+                    </div>
+                    {locked && (
+                      <a href={waURL(OWNER_WA,`Habari! Nataka kupanda hadi ${tier.name}. Niambie zaidi.`)} target="_blank" rel="noopener noreferrer"
+                        style={{ background:`${tier.color}18`, border:`1px solid ${tier.border}`, borderRadius:"20px", padding:"5px 13px", color:tier.color, fontSize:"12px", fontWeight:700, textDecoration:"none", whiteSpace:"nowrap" }}>
+                        ⬆️ Panda
+                      </a>
+                    )}
+                  </div>
+                  {ls.map(l => <LessonCard key={l.id} lesson={l} userTier={cur.tier} tiers={tiers}/>)}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ════ SETTINGS ════ */}
+        {tab==="settings" && (
+          <SettingsScreen user={cur} onLogout={() => { setUser(null); setPhase("auth"); setTab("home"); }} onUpdate={setUser}/>
+        )}
+
+      </main>
+
+      {/* Floating WA */}
+      <a href={waSupport} target="_blank" rel="noopener noreferrer"
+        style={{ position:"fixed", bottom:"90px", right:"14px", width:"56px", height:"56px", background:"#25d366", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 6px 28px rgba(37,211,102,0.55)", textDecoration:"none", zIndex:200 }}>
+        <WAIcon size={26} color="#fff"/>
+      </a>
+
+      {/* Bottom Nav */}
+      <nav style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:"480px", background:"#0a1628", borderTop:"1px solid rgba(255,255,255,0.08)", display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", zIndex:100 }}>
+        {[{id:"home",ic:"🏠",lb:"Nyumbani"},{id:"catalog",ic:"📦",lb:"Catalog"},{id:"lessons",ic:"🎓",lb:"Masomo"},{id:"settings",ic:"⚙️",lb:"Mipangilio"}].map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{ padding:"12px 6px", border:"none", background:"transparent", cursor:"pointer", fontFamily:"inherit", display:"flex", flexDirection:"column", alignItems:"center", gap:"4px", borderTop:`3px solid ${tab===t.id?GOLD:"transparent"}`, transition:"all 0.2s" }}>
+            <span style={{ fontSize:"22px" }}>{t.ic}</span>
+            <span style={{ fontSize:"10px", fontWeight:700, color:tab===t.id?GOLD:"rgba(255,255,255,0.35)" }}>{t.lb}</span>
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
