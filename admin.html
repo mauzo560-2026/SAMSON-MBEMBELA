@@ -3,572 +3,431 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sponsored Ads Tanzania</title>
+<title>SAT Admin Panel</title>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;margin:0;padding:0;}
 body{background:#050f1a;color:#f0f0f0;min-height:100vh;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0a1628;}::-webkit-scrollbar-thumb{background:#C9A84C55;border-radius:4px;}
-input,textarea,select,button,a{font-family:inherit;box-sizing:border-box;}
-button{cursor:pointer;}
-.inp{width:100%;padding:14px 15px;border-radius:12px;background:rgba(255,255,255,0.07);color:#fff;font-size:15px;border:1.5px solid rgba(255,255,255,0.12);outline:none;}
+input,textarea,select,button{font-family:inherit;outline:none;box-sizing:border-box;}
+select option{background:#0d1b2e;color:#fff;}
+.inp{width:100%;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;font-size:14px;border:1.5px solid rgba(255,255,255,0.12);}
 .inp:focus{border-color:#C9A84C88;}
-.gold-btn{background:linear-gradient(135deg,#C9A84C,#f0c060);color:#000;font-weight:900;border:none;border-radius:14px;padding:17px;width:100%;font-size:17px;}
+.card{background:#0d1b2e;border-radius:20px;border:1px solid rgba(255,255,255,0.08);padding:20px;margin-bottom:14px;}
+.gold-btn{background:linear-gradient(135deg,#C9A84C,#f0c060);color:#000;font-weight:900;border:none;cursor:pointer;border-radius:12px;padding:13px;width:100%;font-size:15px;}
+.btn-red{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#f87171;border-radius:10px;padding:11px;width:100%;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-blue{background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:#60a5fa;border-radius:10px;padding:11px;width:100%;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px;}
 .row{display:flex;align-items:center;}
 .rowb{display:flex;align-items:center;justify-content:space-between;}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;}
-.card{background:#0d1b2e;border-radius:20px;border:1px solid rgba(0,51,102,0.4);padding:18px;}
-.sec-title{color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:2px;font-weight:700;margin-bottom:10px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;}
+.lbl{color:rgba(255,255,255,0.45);font-size:11px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;}
+.sec{color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:2px;font-weight:700;margin-bottom:14px;}
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:#003366;transition:opacity .4s;">
-  <div style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.1);border:3px solid #C9A84C;box-shadow:0 0 60px rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:32px;flex-shrink:0;">
-    <span id="sp-emoji" style="font-size:54px;">📡</span>
-    <img id="sp-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-  </div>
-  <h1 id="sp-title" style="color:#fff;font-weight:900;font-size:clamp(1.3rem,5vw,2rem);text-align:center;margin-bottom:8px;">Sponsored Ads Tanzania</h1>
-  <p style="color:#C9A84C;font-size:13px;letter-spacing:4px;font-weight:700;margin-bottom:52px;">DIGITAL MARKETING EXPERTS</p>
-  <div style="width:240px;height:5px;background:rgba(255,255,255,0.15);border-radius:10px;overflow:hidden;">
-    <div id="sp-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#C9A84C,#fff);border-radius:10px;transition:width .1s linear;"></div>
-  </div>
-  <p style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:14px;">Inapakia...</p>
-</div>
-
-<!-- LOGIN -->
-<div id="screen-login" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:#003366;">
-  <div style="width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid #C9A84C;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:20px;flex-shrink:0;">
-    <span id="lg-emoji" style="font-size:38px;">📡</span>
-    <img id="lg-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
-  </div>
-  <h1 id="lg-title" style="color:#fff;font-weight:900;font-size:22px;text-align:center;margin-bottom:6px;">SPONSORED ADS TANZANIA</h1>
-  <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:36px;">Ingia ili uendelee</p>
-  <div style="width:100%;max-width:400px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:30px 22px;">
-    <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:9px;">NAMBA YA SIMU</label>
-    <div class="row" style="margin-bottom:20px;">
-      <div style="padding:16px 13px;background:rgba(255,255,255,0.15);border-radius:14px 0 0 14px;color:#fff;font-weight:800;font-size:16px;border:1.5px solid rgba(255,255,255,0.15);border-right:none;white-space:nowrap;">+255</div>
-      <input id="lg-phone" maxlength="9" placeholder="674 695 549" oninput="onPhone()" onkeydown="if(event.key==='Enter')doLogin()" class="inp" style="border-radius:0 14px 14px 0;border-left:none;font-size:16px;padding:16px 15px;"/>
-    </div>
-    <!-- Returning user -->
-    <div id="ret-card" style="display:none;border-radius:16px;padding:16px;margin-bottom:20px;flex-direction:row;align-items:center;gap:14px;">
-      <div id="ret-av" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0;">A</div>
-      <div>
-        <div style="color:#4ade80;font-size:12px;font-weight:700;margin-bottom:2px;">✅ Umekumbukwa!</div>
-        <div id="ret-name" style="font-weight:900;font-size:16px;">-</div>
-        <div id="ret-badge" style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);border-radius:20px;padding:2px 9px;margin-top:4px;"><span id="ret-icon"></span><span id="ret-tier" style="font-size:11px;font-weight:700;"></span></div>
-      </div>
-    </div>
-    <!-- New user -->
-    <div id="new-wrap" style="display:none;">
-      <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:11px 14px;margin-bottom:14px;">
-        <div style="color:#C9A84C;font-size:13px;font-weight:700;">👤 Karibu! Jisajili kwa mara ya kwanza</div>
-      </div>
-      <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:9px;">JINA LAKO KAMILI</label>
-      <input id="lg-name" placeholder="mf. Amina Saleh" onkeydown="if(event.key==='Enter')doLogin()" class="inp" style="font-size:16px;padding:16px 15px;margin-bottom:20px;"/>
-    </div>
-    <div id="lg-err" style="display:none;background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.4);border-radius:12px;padding:12px 15px;color:#fca5a5;font-size:14px;margin-bottom:16px;"></div>
-    <button id="lg-btn" onclick="doLogin()" class="gold-btn">Ingia Sasa →</button>
-    <p style="color:rgba(255,255,255,0.3);font-size:12px;text-align:center;margin-top:14px;">Msaada? <a id="lg-wa" href="#" target="_blank" style="color:#C9A84C;font-weight:700;">Piga WhatsApp</a></p>
+<div id="screen-login" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:#003366;">
+  <div style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid #C9A84C;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-size:36px;">🔐</div>
+  <h1 style="color:#fff;font-weight:900;font-size:20px;text-align:center;margin-bottom:6px;">ADMIN PANEL</h1>
+  <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:36px;">Sponsored Ads Tanzania</p>
+  <div style="width:100%;max-width:360px;">
+    <input id="login-pw" type="password" placeholder="Ingiza admin password" class="inp" style="border-color:#C9A84C44;font-size:16px;padding:16px;margin-bottom:10px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div id="login-err" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px;">⚠️ Password si sahihi</div>
+    <button onclick="doLogin()" class="gold-btn" style="font-size:17px;padding:16px;">Ingia Admin →</button>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="screen-app" style="display:none;max-width:480px;margin:0 auto;position:relative;">
-
-  <!-- HEADER -->
-  <header style="position:sticky;top:0;z-index:100;padding:14px 18px;background:#003366;box-shadow:0 4px 20px rgba(0,0,0,0.5);">
-    <div class="rowb">
-      <div class="row" style="gap:10px;">
-        <div style="width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,0.12);border:1px solid rgba(201,168,76,0.33);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-          <span id="app-logo-emoji" style="font-size:22px;">📡</span>
-          <img id="app-logo-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+<div id="screen-app" style="display:none;max-width:520px;margin:0 auto;">
+  <div style="position:sticky;top:0;z-index:100;padding:14px 16px 0;background:linear-gradient(135deg,#003366,#001a33);">
+    <div class="rowb" style="margin-bottom:14px;">
+      <div class="row" style="gap:12px;">
+        <div style="width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,0.12);border:1px solid rgba(201,168,76,0.33);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+          <span id="hdr-logo-emoji" style="font-size:22px;">📡</span>
+          <img id="hdr-logo-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
         </div>
         <div>
-          <div id="app-brand-1" style="font-weight:900;font-size:13px;line-height:1;">SPONSORED ADS</div>
-          <div id="app-brand-2" style="color:#C9A84C;font-size:9px;letter-spacing:2px;">TANZANIA</div>
+          <div style="color:#C9A84C;font-size:10px;letter-spacing:3px;font-weight:700;">ADMIN PANEL</div>
+          <div id="hdr-brand" style="color:#fff;font-weight:900;font-size:16px;">SAT</div>
         </div>
       </div>
-      <div class="row" style="gap:9px;">
-        <button onclick="showUnlock()" style="background:rgba(201,168,76,0.22);border:1px solid rgba(201,168,76,0.44);border-radius:20px;padding:6px 13px;color:#C9A84C;font-size:12px;font-weight:700;">🔑 Unlock</button>
-        <div style="text-align:right;">
-          <div id="app-uname" style="font-size:13px;font-weight:700;">-</div>
-          <div id="app-tier" style="font-size:11px;font-weight:700;color:#94a3b8;">🥈 Silver</div>
-        </div>
+      <button onclick="doLogout()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:8px 14px;color:#f87171;font-size:13px;font-weight:700;cursor:pointer;">🔒 Toka</button>
+    </div>
+    <div style="display:flex;">
+      <button onclick="setTab('users')"    data-tab="users"    style="flex:1;padding:11px 4px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);display:flex;flex-direction:column;align-items:center;gap:2px;"><span>👥</span><span>Watumiaji</span></button>
+      <button onclick="setTab('stats')"    data-tab="stats"    style="flex:1;padding:11px 4px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);display:flex;flex-direction:column;align-items:center;gap:2px;"><span>📊</span><span>Takwimu</span></button>
+      <button onclick="setTab('tiers')"    data-tab="tiers"    style="flex:1;padding:11px 4px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);display:flex;flex-direction:column;align-items:center;gap:2px;"><span>🏷️</span><span>Tiers</span></button>
+      <button onclick="setTab('content')"  data-tab="content"  style="flex:1;padding:11px 4px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);display:flex;flex-direction:column;align-items:center;gap:2px;"><span>📹</span><span>Masomo</span></button>
+      <button onclick="setTab('settings')" data-tab="settings" style="flex:1;padding:11px 4px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);display:flex;flex-direction:column;align-items:center;gap:2px;"><span>⚙️</span><span>Mipangilio</span></button>
+    </div>
+  </div>
+
+  <div style="padding:18px 16px 100px;">
+
+    <div id="tab-users">
+      <div class="grid3" style="margin-bottom:18px;">
+        <div class="card" style="text-align:center;padding:14px 10px;margin-bottom:0;"><div style="font-size:18px;margin-bottom:4px;">👥</div><div id="stat-total" style="font-weight:900;font-size:22px;color:#C9A84C;">0</div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px;">Wote</div></div>
+        <div class="card" style="text-align:center;padding:14px 10px;margin-bottom:0;"><div style="font-size:18px;margin-bottom:4px;">✅</div><div id="stat-active" style="font-weight:900;font-size:22px;color:#C9A84C;">0</div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px;">Aktive</div></div>
+        <div class="card" style="text-align:center;padding:14px 10px;margin-bottom:0;"><div style="font-size:18px;margin-bottom:4px;">⏱</div><div id="stat-otps" style="font-weight:900;font-size:22px;color:#C9A84C;">0</div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px;">OTP Hai</div></div>
+      </div>
+      <input id="user-search" oninput="renderUsers()" placeholder="🔍 Tafuta jina au namba..." class="inp" style="font-size:15px;padding:13px 15px;border-color:rgba(255,255,255,0.1);margin-bottom:10px;"/>
+      <div id="tier-filters" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;"></div>
+      <button onclick="showAddUser()" style="width:100%;padding:13px;background:linear-gradient(135deg,#003366,#005599);border:1px dashed rgba(255,255,255,0.2);border-radius:14px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;">➕ Ongeza Mtumiaji Mpya</button>
+      <div id="users-list"></div>
+    </div>
+
+    <div id="tab-stats" style="display:none;">
+      <div class="sec">📊 MUHTASARI WA TIERS</div>
+      <div id="stats-tiers"></div>
+      <div class="card"><div class="sec">🔑 OTP ZA HIVI KARIBUNI</div><div id="stats-otps"></div></div>
+    </div>
+
+    <div id="tab-tiers" style="display:none;">
+      <div class="sec">🏷️ HARIRI MAJINA YA TIERS</div>
+      <p style="color:rgba(255,255,255,0.3);font-size:13px;margin-bottom:18px;line-height:1.5;">Badilisha majina, sub-titles na icons.</p>
+      <div id="tiers-editor"></div>
+      <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:12px;padding:12px 16px;margin-top:4px;"><div style="color:#4ade80;font-size:13px;">✅ Mabadiliko yanahifadhiwa kiotomatiki</div></div>
+    </div>
+
+    <div id="tab-content" style="display:none;">
+      <div class="sec">📹 SIMAMIA MAUDHUI</div>
+      <div class="grid2" style="margin-bottom:20px;">
+        <button onclick="setCSub('lessons')"  id="csub-lessons"  style="padding:11px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;">📚 Masomo</button>
+        <button onclick="setCSub('packages')" id="csub-packages" style="padding:11px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;">📦 Packages</button>
+      </div>
+      <div id="content-lessons">
+        <p style="color:rgba(255,255,255,0.3);font-size:13px;margin-bottom:18px;line-height:1.5;">Ongeza, hariri au futa masomo.</p>
+        <button onclick="showLessonForm()" style="width:100%;padding:13px;background:linear-gradient(135deg,#003366,#005599);border:1px dashed rgba(255,255,255,0.2);border-radius:14px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;">➕ Ongeza Somo Jipya</button>
+        <div id="lesson-form-wrap"></div>
+        <div id="lessons-list"></div>
+      </div>
+      <div id="content-packages" style="display:none;">
+        <p style="color:rgba(255,255,255,0.3);font-size:13px;margin-bottom:14px;line-height:1.5;">Hariri au ongeza packages.</p>
+        <button onclick="showNewPackageForm()" style="width:100%;padding:13px;background:linear-gradient(135deg,#003366,#005599);border:1px dashed rgba(255,255,255,0.2);border-radius:14px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;">➕ Ongeza Package Mpya</button>
+        <div id="new-pkg-form-wrap"></div>
+        <div id="packages-list"></div>
       </div>
     </div>
-  </header>
 
-  <main style="padding-bottom:90px;">
-
-    <!-- HOME -->
-    <div id="tab-home">
-      <div style="margin:14px;background:linear-gradient(135deg,#003366,#005599);border-radius:22px;padding:20px 18px;">
-        <div style="color:#C9A84C;font-size:12px;font-weight:700;margin-bottom:5px;letter-spacing:2px;">KARIBU TENA 👋</div>
-        <div id="home-greet" style="font-weight:900;font-size:22px;margin-bottom:4px;">Habari!</div>
-        <div style="color:rgba(255,255,255,0.6);font-size:15px;margin-bottom:14px;">Anza kukua biashara yako leo.</div>
-        <div id="home-tier-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(148,163,184,0.22);border:1px solid rgba(148,163,184,0.35);border-radius:20px;padding:5px 13px;">
-          <span>🥈</span><span style="color:#94a3b8;font-size:13px;font-weight:700;">BASIC ADS</span>
-        </div>
-      </div>
-      <!-- Stats -->
-      <div class="grid3" style="padding:14px;margin:0;">
-        <div class="card" style="text-align:center;padding:16px 10px;">
-          <div style="font-weight:900;font-size:22px;color:#C9A84C;">500+</div>
-          <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;line-height:1.3;">Wateja Wetu</div>
-        </div>
-        <div class="card" style="text-align:center;padding:16px 10px;">
-          <div style="font-weight:900;font-size:22px;color:#C9A84C;">4</div>
-          <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;line-height:1.3;">Packages</div>
-        </div>
-        <div class="card" style="text-align:center;padding:16px 10px;">
-          <div style="font-weight:900;font-size:22px;color:#C9A84C;">24/7</div>
-          <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;line-height:1.3;">Support</div>
-        </div>
-      </div>
-      <!-- Banner -->
-      <div style="padding:0 14px 14px;">
-        <div class="sec-title">📢 MATANGAZO MAALUM</div>
-        <div style="border-radius:20px;overflow:hidden;position:relative;">
-          <div id="banner-bg" style="padding:32px 26px;min-height:145px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(135deg,#003366,#005599);">
-            <div style="color:#C9A84C;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:8px;">TANGAZO MAALUM</div>
-            <div id="banner-title" style="color:#fff;font-weight:900;font-size:21px;line-height:1.2;margin-bottom:7px;">Ongeza Mauzo Yako Leo</div>
-            <div id="banner-sub" style="color:rgba(255,255,255,0.6);font-size:14px;">Huduma za matangazo ya hali ya juu</div>
+    <div id="tab-settings" style="display:none;">
+      <div class="card">
+        <div class="sec">🖼️ LOGO YA APP</div>
+        <div class="row" style="gap:16px;margin-bottom:16px;">
+          <div style="width:70px;height:70px;border-radius:16px;background:rgba(255,255,255,0.08);border:2px dashed rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+            <span id="set-logo-emoji" style="font-size:28px;">📡</span>
+            <img id="set-logo-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
           </div>
-          <div id="banner-dots" style="position:absolute;bottom:12px;right:14px;display:flex;gap:6px;"></div>
+          <div><div style="font-weight:700;font-size:15px;margin-bottom:4px;">Logo ya Sasa</div><div id="set-logo-status" style="color:rgba(255,255,255,0.4);font-size:13px;">Bado hujaweka logo</div></div>
         </div>
+        <input id="logo-file" type="file" accept="image/*" style="display:none;" onchange="uploadLogo(event)"/>
+        <button onclick="document.getElementById('logo-file').click()" class="gold-btn" style="margin-bottom:8px;">📤 Upload Logo Mpya</button>
+        <button id="del-logo-btn" onclick="deleteLogo()" class="btn-red" style="display:none;">🗑️ Futa Logo</button>
       </div>
-      <!-- Testimonials -->
-      <div style="padding:0 14px;">
-        <div class="sec-title">⭐ USHAHIDI WA WATEJA</div>
-        <div id="test-list"></div>
+      <div class="card">
+        <div class="sec">✏️ JINA LA BRAND</div>
+        <input id="brand-name-inp" oninput="saveBrandName()" class="inp" style="border-color:rgba(201,168,76,0.3);font-size:15px;font-weight:700;padding:13px 15px;"/>
       </div>
-      <div style="height:18px;"></div>
-    </div>
-
-    <!-- CATALOG -->
-    <div id="tab-catalog" style="display:none;padding:14px;">
-      <div style="margin-bottom:24px;">
-        <div style="color:#C9A84C;font-size:11px;letter-spacing:3px;font-weight:700;margin-bottom:8px;">✦ PACKAGES ZETU</div>
-        <h2 style="font-weight:900;font-size:26px;line-height:1.1;margin-bottom:9px;">Chagua Package Yako</h2>
-        <p style="color:rgba(255,255,255,0.5);font-size:15px;line-height:1.65;">Packages zote zinajumuisha ushauri wa bure wa wiki ya kwanza na support ya WhatsApp 24/7.</p>
+      <div class="card">
+        <div class="sec">⚙️ TAARIFA ZA APP</div>
+        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Namba ya Owner</span><span style="font-weight:700;font-size:14px;">255674695549</span></div>
+        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">OTP Duration</span><span style="font-weight:700;font-size:14px;">Sekunde 90</span></div>
+        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">App Version</span><span style="font-weight:700;font-size:14px;">v2.0</span></div>
+        <div class="rowb" style="padding:12px 0;"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Watumiaji Wote</span><span id="set-total-users" style="font-weight:700;font-size:14px;">0</span></div>
       </div>
-      <div id="catalog-list"></div>
-    </div>
-
-    <!-- LESSONS -->
-    <div id="tab-lessons" style="display:none;padding:14px;">
-      <div id="les-banner" style="border-radius:18px;padding:16px 18px;margin-bottom:22px;display:flex;align-items:center;gap:12px;background:rgba(148,163,184,0.12);border:1.5px solid rgba(148,163,184,0.35);">
-        <span id="ltb-icon" style="font-size:34px;">🥈</span>
-        <div style="flex:1;">
-          <div id="ltb-name" style="color:#94a3b8;font-weight:900;font-size:15px;">BASIC ADS</div>
-          <div id="ltb-level" style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:2px;">Unafikia masomo Level 1–1</div>
-        </div>
-        <button onclick="showUnlock()" style="background:#C9A84C;border:none;border-radius:10px;padding:9px 14px;color:#000;font-weight:900;font-size:13px;">🔑 Fungua</button>
-      </div>
-      <div id="lessons-list"></div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div id="tab-settings" style="display:none;padding:16px 16px 100px;">
-      <div class="card" style="margin-bottom:14px;">
-        <div class="sec-title">👤 WASIFU WANGU</div>
-        <div class="row" style="gap:14px;margin-bottom:20px;">
-          <div id="set-av" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;border:2px solid #94a3b8;flex-shrink:0;">A</div>
-          <div>
-            <div id="set-name-d" style="font-weight:800;font-size:18px;">-</div>
-            <div id="set-phone-d" style="color:rgba(255,255,255,0.4);font-size:14px;">-</div>
-            <div id="set-tier-badge" style="display:inline-flex;align-items:center;gap:5px;background:rgba(148,163,184,0.18);border:1px solid rgba(148,163,184,0.35);border-radius:20px;padding:3px 10px;margin-top:5px;">
-              <span id="set-t-icon">🥈</span><span id="set-t-name" style="color:#94a3b8;font-size:12px;font-weight:700;">BASIC ADS</span>
-            </div>
-          </div>
-        </div>
-        <label style="display:block;color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:7px;">BADILISHA JINA</label>
-        <input id="set-name-inp" class="inp" style="margin-bottom:14px;"/>
-        <button onclick="saveProfile()" id="save-btn" class="gold-btn" style="font-size:15px;padding:13px;">Hifadhi Mabadiliko</button>
-      </div>
-      <div id="set-pkg-card" class="card" style="margin-bottom:14px;">
-        <div class="sec-title">📦 PACKAGE YANGU</div>
-        <div class="row" style="gap:14px;margin-bottom:16px;">
-          <span id="set-pkg-icon" style="font-size:40px;">🥈</span>
-          <div>
-            <div id="set-pkg-name" style="color:#94a3b8;font-weight:900;font-size:18px;">BASIC ADS</div>
-            <div id="set-pkg-lvl" style="color:rgba(255,255,255,0.5);font-size:13px;">Level 1 Access</div>
-          </div>
-        </div>
-        <a id="set-upgrade" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25);border-radius:12px;text-decoration:none;color:#4ade80;font-weight:700;font-size:14px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#4ade80"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Omba Upgrade
+      <div class="card">
+        <div class="sec">🛠️ VITENDO</div>
+        <button onclick="clearAllOTPs()" class="btn-red" style="margin-bottom:10px;">🗑️ Futa OTP Zote</button>
+        <button onclick="downloadBackup()" class="btn-blue">📥 Download Backup</button>
+        <a id="wa-test-link" href="#" target="_blank" style="display:flex;align-items:center;gap:10px;padding:12px 15px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25);border-radius:11px;text-decoration:none;color:#4ade80;font-weight:700;font-size:14px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Test WhatsApp Link
         </a>
       </div>
-      <div class="card" style="margin-bottom:14px;">
-        <div class="sec-title">ℹ️ KUHUSU APP</div>
-        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Jina la App</span><span id="set-app-name" style="font-weight:700;font-size:14px;">SAT</span></div>
-        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Toleo la App</span><span style="font-weight:700;font-size:14px;">v2.0</span></div>
-        <div class="rowb" style="padding:12px 0;"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Mawasiliano</span><span style="font-weight:700;font-size:14px;">+255674695549</span></div>
-      </div>
-      <div class="card" style="margin-bottom:14px;">
-        <div class="sec-title">📞 MSAADA</div>
-        <a id="set-wa-support" href="#" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25);border-radius:12px;text-decoration:none;color:#4ade80;font-weight:700;font-size:15px;margin-bottom:10px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#4ade80"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Piga WhatsApp Support
-        </a>
-        <p style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;">Tunajibu 24/7 kupitia WhatsApp</p>
-      </div>
-      <button onclick="doLogout()" style="width:100%;padding:15px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:14px;color:#f87171;font-weight:900;font-size:16px;">🚪 Toka (Logout)</button>
     </div>
 
-  </main>
+  </div>
 
-  <!-- BOTTOM NAV -->
-  <nav style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#0a1628;border-top:1px solid rgba(255,255,255,0.08);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;z-index:100;">
-    <button onclick="setTab('home')"     data-tab="home"     style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">🏠</span><span id="nl-home"     style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Nyumbani</span></button>
-    <button onclick="setTab('catalog')" data-tab="catalog"  style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">📦</span><span id="nl-catalog"  style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Catalog</span></button>
-    <button onclick="setTab('lessons')" data-tab="lessons"  style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">🎓</span><span id="nl-lessons"  style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Masomo</span></button>
-    <button onclick="setTab('settings')" data-tab="settings" style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">⚙️</span><span id="nl-settings" style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Mipangilio</span></button>
-  </nav>
-
-  <!-- FLOATING WA -->
-  <a id="fab-wa" href="#" target="_blank" style="position:fixed;bottom:90px;right:14px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(37,211,102,0.55);text-decoration:none;z-index:200;">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  <a id="fab-wa" href="#" target="_blank" style="position:fixed;bottom:24px;right:16px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(37,211,102,0.5);text-decoration:none;z-index:200;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 </div>
 
-<!-- UNLOCK MODAL -->
-<div id="modal-unlock" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.88);">
-  <div style="background:#0d1b2e;border:2px solid rgba(201,168,76,0.55);border-radius:24px;padding:30px 22px;width:100%;max-width:380px;">
-    <div id="unlock-ok" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:60px;margin-bottom:16px;">🎉</div>
-      <div style="font-weight:900;font-size:22px;color:#4ade80;margin-bottom:8px;">Umefunguliwa!</div>
-      <div style="color:rgba(255,255,255,0.5);font-size:15px;">Sasa unaweza kufikia content yako.</div>
+<div id="modal-add-user" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.88);">
+  <div style="background:#0d1b2e;border:1px solid rgba(201,168,76,0.3);border-radius:24px;padding:26px 22px;width:100%;max-width:400px;">
+    <div class="rowb" style="margin-bottom:20px;">
+      <div style="font-weight:900;font-size:20px;">➕ Ongeza Mtumiaji</div>
+      <button onclick="hideModal('modal-add-user')" style="width:32px;height:32px;background:rgba(255,255,255,0.08);border:none;border-radius:50%;color:#aaa;cursor:pointer;font-size:16px;">✕</button>
     </div>
-    <div id="unlock-form">
-      <div style="text-align:center;margin-bottom:22px;">
-        <div style="font-size:52px;margin-bottom:12px;">🔑</div>
-        <div style="font-weight:900;font-size:22px;margin-bottom:8px;">Ingiza Namba Yako</div>
-        <div style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;">Omba namba kwa admin kupitia WhatsApp, kisha uiingize hapa.</div>
-      </div>
-      <input id="unlock-code" placeholder="mf. SAT-AB3CD4" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryUnlock()"
-        style="width:100%;padding:17px;background:rgba(255,255,255,0.07);border:2px solid rgba(201,168,76,0.55);border-radius:14px;color:#C9A84C;font-size:18px;font-weight:900;letter-spacing:4px;outline:none;font-family:monospace;text-align:center;margin-bottom:12px;"/>
-      <div id="unlock-err" style="display:none;color:#fca5a5;font-size:13px;margin-bottom:12px;text-align:center;line-height:1.5;"></div>
-      <button onclick="tryUnlock()" class="gold-btn" style="margin-bottom:10px;">Fungua 🔓</button>
-      <button onclick="hideUnlock()" style="width:100%;padding:13px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:16px;">Funga</button>
-      <div style="text-align:center;"><a id="unlock-wa" href="#" target="_blank" style="color:#C9A84C;font-size:13px;font-weight:700;text-decoration:none;">📲 Omba namba kwa admin →</a></div>
+    <label class="lbl">JINA KAMILI</label>
+    <input id="add-name" placeholder="mf. Amina Saleh" class="inp" style="margin-bottom:13px;"/>
+    <label class="lbl">NAMBA YA SIMU</label>
+    <div class="row" style="margin-bottom:13px;">
+      <div style="padding:12px;background:rgba(255,255,255,0.12);border-radius:10px 0 0 10px;color:#fff;font-weight:700;border:1.5px solid rgba(255,255,255,0.12);border-right:none;white-space:nowrap;">+255</div>
+      <input id="add-phone" placeholder="711 000 001" maxlength="9" oninput="this.value=this.value.replace(/\D/g,'').slice(0,9)" class="inp" style="border-radius:0 10px 10px 0;border-left:none;"/>
     </div>
+    <label class="lbl">TIER</label>
+    <div id="add-tier-btns" class="grid2" style="margin-bottom:18px;"></div>
+    <div id="add-err" style="display:none;color:#f87171;font-size:13px;margin-bottom:12px;"></div>
+    <button onclick="submitAddUser()" class="gold-btn" style="font-size:16px;">Ongeza ✓</button>
   </div>
 </div>
 
 <script>
-const OWA="255674695549";
-const DT={silver:{id:"silver",level:1,name:"BASIC ADS",sub:"Silver",color:"#94a3b8",icon:"🥈",border:"rgba(148,163,184,0.35)"},green:{id:"green",level:2,name:"BUSINESS GROWTH",sub:"Green",color:"#22c55e",icon:"🟢",border:"rgba(34,197,94,0.35)"},gold:{id:"gold",level:3,name:"PREMIUM MENTORSHIP",sub:"Gold",color:"#C9A84C",icon:"🥇",border:"rgba(201,168,76,0.4)"},royal:{id:"royal",level:4,name:"CORPORATE MANAGEMENT",sub:"Royal Blue",color:"#60a5fa",icon:"👑",border:"rgba(96,165,250,0.4)"}};
-const DPKG=[{tier:"silver",price:"TSh 50,000",period:"/mwezi",popular:false,image:"",desc:"Pakiti bora ya kuanza biashara yako mtandaoni kwa gharama nafuu.",features:["Facebook Ads x3/wiki","Picha 5/mwezi","Ripoti ya mwezi","WhatsApp Support","Masomo Level 1"]},{tier:"green",price:"TSh 120,000",period:"/mwezi",popular:true,image:"",desc:"Pakiti maarufu kwa biashara zinazotaka kukua haraka na kufikia wateja wengi.",features:["FB + Instagram Ads","Picha 15 + Video 2","Ripoti ya wiki","Priority Support","Masomo Level 1 & 2"]},{tier:"gold",price:"TSh 300,000",period:"/mwezi",popular:false,image:"",desc:"Huduma ya premium yenye Account Manager wako mwenyewe na ripoti kila siku.",features:["Majukwaa Yote","Picha + Video Unlimited","Account Manager","Ripoti Kila Siku","Masomo Level 1–3"]},{tier:"royal",price:"TSh 800,000",period:"/mwezi",popular:false,image:"",desc:"Suluhisho kamili la kampuni kubwa na mfumo wa corporate dashboard.",features:["Kila kitu cha Gold","Corporate Dashboard","Team Training","WhatsApp Bot","Analytics","Masomo Yote"]}];
+const OWNER_WA="255674695549",PASS="ADMIN2025";
+const DT={silver:{id:"silver",level:1,name:"BASIC ADS",sub:"Silver",color:"#94a3b8",icon:"🥈"},green:{id:"green",level:2,name:"BUSINESS GROWTH",sub:"Green",color:"#22c55e",icon:"🟢"},gold:{id:"gold",level:3,name:"PREMIUM MENTORSHIP",sub:"Gold",color:"#C9A84C",icon:"🥇"},royal:{id:"royal",level:4,name:"CORPORATE MANAGEMENT",sub:"Royal Blue",color:"#60a5fa",icon:"👑"}};
 const DL=[{id:1,tier:"silver",title:"Utangulizi wa Facebook Ads",dur:"12:30",views:"2.1K",desc:"Jinsi ya kuanza matangazo ya Facebook kwa biashara yako kutoka sifuri kabisa.",videoUrl:""},{id:2,tier:"silver",title:"Kuunda Picha ya Tangazo Bora",dur:"08:45",views:"1.8K",desc:"Mbinu za kuunda picha za kuvutia kwa Canva na tools nyingine za bure.",videoUrl:""},{id:3,tier:"silver",title:"Target Audience — Chaguo Sahihi",dur:"10:15",views:"3.2K",desc:"Jifunza jinsi ya kuchagua hadhira sahihi kwa matangazo yako.",videoUrl:""},{id:4,tier:"green",title:"Facebook Pixel Setup ya Pro",dur:"25:10",views:"980",desc:"Setup kamili ya Facebook Pixel kwa tracking ya juu ya mauzo yako.",videoUrl:""},{id:5,tier:"green",title:"Retargeting Campaigns",dur:"32:45",views:"756",desc:"Jinsi ya kuwalenga tena watu waliokwisha tembelea tovuti au kurasa yako.",videoUrl:""},{id:6,tier:"green",title:"Instagram Ads Mastery",dur:"28:00",views:"1.1K",desc:"Mkakati kamili wa Instagram Ads unaofanya kazi Tanzania.",videoUrl:""},{id:7,tier:"gold",title:"Google Ads Step by Step",dur:"45:00",views:"870",desc:"Guide kamili ya kuunda Google Search Ads kutoka mwanzo hadi matokeo ya kweli.",videoUrl:""},{id:8,tier:"gold",title:"TikTok Ads Tanzania 2025",dur:"38:20",views:"920",desc:"Mkakati wa TikTok Ads unaofanya kazi kwa biashara za Tanzania 2025.",videoUrl:""},{id:9,tier:"gold",title:"Email Marketing Automation",dur:"28:15",views:"670",desc:"Jenga mfumo wa email marketing unaouza ukiwa umelala.",videoUrl:""},{id:10,tier:"royal",title:"Analytics & ROI Dashboard",dur:"50:00",views:"340",desc:"Pima matokeo ya matangazo yako na ufanye maamuzi ya kisayansi.",videoUrl:""},{id:11,tier:"royal",title:"Corporate Ad Strategy Tanzania",dur:"60:00",views:"210",desc:"Mkakati kamili wa matangazo kwa makampuni makubwa Tanzania.",videoUrl:""}];
-const TESTS=[{name:"Mama Pendo",city:"Dar es Salaam",text:"Mauzo yangu yameongezeka mara 3 baada ya kutumia huduma hii!",stars:5,e:"🛍️"},{name:"Bwana Khalid",city:"Mwanza",text:"Growth package imenisaidia kupata wateja 200+ kwa mwezi mmoja.",stars:5,e:"📈"},{name:"Grace Mollel",city:"Arusha",text:"Professional sana. Picha na video za hali ya juu kabisa!",stars:5,e:"🎬"},{name:"Hassan Juma",city:"Dodoma",text:"Thamani yake ni kubwa mno. Ninaipendekeza kwa kila mtu.",stars:5,e:"💪"},{name:"Amina Saleh",city:"Zanzibar",text:"Facebook Ads zao zimeleta wateja hata wa nje ya Tanzania!",stars:5,e:"🌍"},{name:"Peter Msigwa",city:"Morogoro",text:"Team yao inajibu haraka sana. Support bora kuliko wote.",stars:5,e:"🏆"}];
-const BANNERS=[{title:"Ongeza Mauzo Yako Leo",sub:"Huduma za matangazo ya hali ya juu",grad:"linear-gradient(135deg,#003366,#005599)"},{title:"Special Offer — 20% OFF",sub:"Kwa wateja wapya wa mwezi huu",grad:"linear-gradient(135deg,#7c2d12,#C9A84C)"},{title:"Afrika Mashariki & Zaidi",sub:"Wateja kutoka mataifa mengi",grad:"linear-gradient(135deg,#064e3b,#065f46)"}];
-
-function rS(){try{const r=localStorage.getItem("sat_store");return r?JSON.parse(r):null;}catch{return null;}}
+const DP=[{tier:"silver",price:"TSh 50,000",period:"/mwezi",popular:false,image:"",desc:"Pakiti bora ya kuanza biashara yako mtandaoni kwa gharama nafuu.",features:["Facebook Ads x3/wiki","Picha 5/mwezi","Ripoti ya mwezi","WhatsApp Support","Masomo Level 1"]},{tier:"green",price:"TSh 120,000",period:"/mwezi",popular:true,image:"",desc:"Pakiti maarufu kwa biashara zinazotaka kukua haraka na kufikia wateja wengi.",features:["FB + Instagram Ads","Picha 15 + Video 2","Ripoti ya wiki","Priority Support","Masomo Level 1 & 2"]},{tier:"gold",price:"TSh 300,000",period:"/mwezi",popular:false,image:"",desc:"Huduma ya premium yenye Account Manager wako mwenyewe na ripoti kila siku.",features:["Majukwaa Yote","Picha + Video Unlimited","Account Manager","Ripoti Kila Siku","Masomo Level 1–3"]},{tier:"royal",price:"TSh 800,000",period:"/mwezi",popular:false,image:"",desc:"Suluhisho kamili la kampuni kubwa na mfumo wa corporate dashboard.",features:["Kila kitu cha Gold","Corporate Dashboard","Team Training","WhatsApp Bot","Analytics","Masomo Yote"]}];
+const DS={tiers:DT,logo:null,brandName:"SPONSORED ADS TANZANIA",lessons:DL,packages:DP,users:[{id:1,name:"Amina Saleh",phone:"+255711000001",tier:"silver",joinDate:"2025-01-10",active:true},{id:2,name:"Hassan Juma",phone:"+255711000002",tier:"green",joinDate:"2025-01-12",active:true},{id:3,name:"Grace Mollel",phone:"+255711000003",tier:"gold",joinDate:"2025-01-15",active:true},{id:4,name:"Peter Msigwa",phone:"+255711000004",tier:"silver",joinDate:"2025-01-18",active:false}],otps:{}};
+function rS(){try{const r=localStorage.getItem("sat_store");return r?{...DS,...JSON.parse(r)}:DS;}catch{return DS;}}
+function wS(s){try{localStorage.setItem("sat_store",JSON.stringify(s));}catch{}}
+function S(){return rS();}
+function uS(fn){const s=S();fn(s);wS(s);}
 function wa(p,m){return"https://wa.me/"+p.replace(/\D/g,"")+"?text="+encodeURIComponent(m);}
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function tiers(){const s=rS();return s?.tiers||DT;}
-function pkgs(){const s=rS();return s?.packages||DPKG;}
-function lessons(){const s=rS();return s?.lessons||DL;}
-function ytId(url){const m=(url||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+function gc(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="SAT-";for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function hideModal(id){document.getElementById(id).style.display="none";}
+function showModal(id){document.getElementById(id).style.display="flex";}
+function tof(id){const s=S();return(s.tiers&&s.tiers[id])||DT[id]||DT.silver;}
 
-let cUser=null,cTab="home",bannerIdx=0,bTimer=null,pTimer=null;
-
-// Splash
-window.onload=function(){
-  const s=rS();
-  if(s?.brandName)document.getElementById("sp-title").textContent="Karibu "+s.brandName;
-  if(s?.logo){document.getElementById("sp-emoji").style.display="none";const i=document.getElementById("sp-img");i.src=s.logo;i.style.display="block";}
-  const start=Date.now();
-  const iv=setInterval(()=>{
-    const p=Math.min(100,((Date.now()-start)/3000)*100);
-    document.getElementById("sp-bar").style.width=p+"%";
-    if(p>=100){clearInterval(iv);setTimeout(()=>{const sp=document.getElementById("splash");sp.style.opacity="0";setTimeout(()=>{sp.style.display="none";showLogin();},400);},200);}
-  },30);
-};
-
-function showLogin(){
-  const s=rS();
-  if(s?.logo){document.getElementById("lg-emoji").style.display="none";const i=document.getElementById("lg-img");i.src=s.logo;i.style.display="block";}
-  if(s?.brandName)document.getElementById("lg-title").textContent=s.brandName;
-  document.getElementById("lg-wa").href=wa(OWA,"Habari! Ninahitaji msaada wa kuingia.");
-  document.getElementById("screen-login").style.display="flex";
-}
-
-function onPhone(){
-  const phone=document.getElementById("lg-phone").value.replace(/\D/g,"").slice(0,9);
-  document.getElementById("lg-phone").value=phone;
-  document.getElementById("lg-err").style.display="none";
-  document.getElementById("ret-card").style.display="none";
-  document.getElementById("new-wrap").style.display="none";
-  if(phone.length===9){
-    const full="+255"+phone,s=rS(),ex=s?.users?.find(u=>u.phone===full),tr=tiers();
-    if(ex){
-      const t=tr[ex.tier]||DT.silver;
-      document.getElementById("ret-av").textContent=ex.name[0];
-      document.getElementById("ret-av").style.borderColor=t.color;
-      document.getElementById("ret-name").textContent=ex.name;
-      document.getElementById("ret-icon").textContent=t.icon;
-      document.getElementById("ret-tier").textContent=t.name;
-      document.getElementById("ret-tier").style.color=t.color;
-      const rc=document.getElementById("ret-card");
-      rc.style.display="flex";rc.style.background=t.color+"12";rc.style.borderColor=t.color+"44";
-      document.getElementById("lg-btn").textContent="Ingia — "+ex.name.split(" ")[0]+" →";
-    } else {
-      document.getElementById("new-wrap").style.display="block";
-      document.getElementById("lg-btn").textContent="Ingia Sasa →";
-    }
-  } else {document.getElementById("lg-btn").textContent="Ingia Sasa →";}
-}
+let cTab="users",fTier="all",cSub="lessons",addTS="silver",eLid=null,ePkg=null,otpT={};
 
 function doLogin(){
-  const phone=document.getElementById("lg-phone").value.replace(/\D/g,"").slice(0,9);
-  const err=document.getElementById("lg-err");
-  if(phone.length<9){err.textContent="⚠️ Digits 9 za simu zinahitajika";err.style.display="block";return;}
-  const full="+255"+phone,s=rS(),ex=s?.users?.find(u=>u.phone===full);
-  if(ex){cUser={...ex,isKnown:true};}
-  else{
-    const name=document.getElementById("lg-name").value.trim();
-    if(!name){err.textContent="⚠️ Tafadhali jaza jina lako kamili";err.style.display="block";return;}
-    cUser={id:Date.now(),name,phone:full,tier:"silver",active:true,isKnown:false};
-  }
-  document.getElementById("screen-login").style.display="none";
-  initApp();
+  if(document.getElementById("login-pw").value===PASS){
+    document.getElementById("screen-login").style.display="none";
+    document.getElementById("screen-app").style.display="block";
+    initApp();
+  } else {document.getElementById("login-err").style.display="block";}
 }
-
-function initApp(){
-  const s=rS(),fresh=s?.users?.find(u=>u.id===cUser?.id);
-  if(fresh)cUser={...fresh,isKnown:true};
-  updateHdr();
-  document.getElementById("screen-app").style.display="block";
-  document.getElementById("fab-wa").href=wa(OWA,"Habari! Mimi ni "+cUser.name+" ("+cUser.phone+"). Ninahitaji msaada.");
-  document.getElementById("unlock-wa").href=wa(OWA,"Habari! Ninahitaji namba ya kufungua premium content yangu.");
-  setTab("home");
-  startBanner();
-  pTimer=setInterval(()=>{
-    const s=rS();if(!s||!cUser)return;
-    const up=s.users?.find(u=>u.id===cUser.id);
-    if(up&&up.tier!==cUser.tier){cUser={...cUser,tier:up.tier};updateHdr();if(cTab==="lessons")renderLessons();if(cTab==="home")renderHomeTier();}
-  },3000);
-}
-
-function updateHdr(){
-  const s=rS(),tr=tiers(),ct=tr[cUser.tier]||DT.silver,bn=s?.brandName||"SPONSORED ADS TANZANIA";
-  const parts=bn.split(" ");
-  document.getElementById("app-brand-1").textContent=parts.slice(0,2).join(" ");
-  document.getElementById("app-brand-2").textContent=parts.slice(2).join(" ")||"TANZANIA";
-  document.getElementById("app-uname").textContent=cUser.name.split(" ")[0];
-  document.getElementById("app-tier").textContent=ct.icon+" "+ct.sub;
-  document.getElementById("app-tier").style.color=ct.color;
-  if(s?.logo){document.getElementById("app-logo-emoji").style.display="none";const i=document.getElementById("app-logo-img");i.src=s.logo;i.style.display="block";}
-}
-
 function doLogout(){
-  clearInterval(pTimer);clearInterval(bTimer);cUser=null;
   document.getElementById("screen-app").style.display="none";
-  document.getElementById("lg-phone").value="";document.getElementById("lg-name").value="";
-  document.getElementById("ret-card").style.display="none";document.getElementById("new-wrap").style.display="none";
-  document.getElementById("lg-btn").textContent="Ingia Sasa →";
-  showLogin();
+  document.getElementById("screen-login").style.display="flex";
+  document.getElementById("login-pw").value="";
+  document.getElementById("login-err").style.display="none";
 }
-
+function initApp(){
+  const s=S();updateHdr(s);setTab("users");
+  document.getElementById("brand-name-inp").value=s.brandName||"";
+  document.getElementById("wa-test-link").href=wa(OWNER_WA,"Habari! Test ya WhatsApp link.");
+  document.getElementById("fab-wa").href=wa(OWNER_WA,"Habari! Admin panel test.");
+  setInterval(()=>{renderStats();renderUsers();renderStatsTab();},3000);
+}
+function updateHdr(s){
+  s=s||S();
+  document.getElementById("hdr-brand").textContent=s.brandName||"SAT";
+  if(s.logo){document.getElementById("hdr-logo-emoji").style.display="none";const i=document.getElementById("hdr-logo-img");i.src=s.logo;i.style.display="block";}
+  else{document.getElementById("hdr-logo-emoji").style.display="";document.getElementById("hdr-logo-img").style.display="none";}
+}
 function setTab(tab){
   cTab=tab;
-  ["home","catalog","lessons","settings"].forEach(t=>{document.getElementById("tab-"+t).style.display=t===tab?"block":"none";});
-  ["home","catalog","lessons","settings"].forEach(t=>{
-    const b=document.querySelector('[data-tab="'+t+'"]'),l=document.getElementById("nl-"+t);
-    if(b)b.style.borderTopColor=t===tab?"#C9A84C":"transparent";
-    if(l)l.style.color=t===tab?"#C9A84C":"rgba(255,255,255,0.35)";
-  });
-  if(tab==="home")renderHome();
-  if(tab==="catalog")renderCatalog();
-  if(tab==="lessons")renderLessons();
+  ["users","stats","tiers","content","settings"].forEach(t=>{document.getElementById("tab-"+t).style.display=t===tab?"block":"none";});
+  document.querySelectorAll("[data-tab]").forEach(b=>{const a=b.dataset.tab===tab;b.style.color=a?"#C9A84C":"rgba(255,255,255,0.4)";b.style.borderBottomColor=a?"#C9A84C":"transparent";b.style.borderBottomWidth="3px";b.style.borderBottomStyle="solid";});
+  if(tab==="users"){renderStats();renderUsers();renderTierFilters();}
+  if(tab==="stats")renderStatsTab();
+  if(tab==="tiers")renderTiersEd();
+  if(tab==="content")setCSub(cSub);
   if(tab==="settings")renderSettings();
 }
-
-// Home
-function renderHome(){
-  const tr=tiers(),ct=tr[cUser.tier]||DT.silver;
-  document.getElementById("home-greet").textContent="Habari, "+cUser.name.split(" ")[0]+"!";
-  renderHomeTier();
-  document.getElementById("test-list").innerHTML=TESTS.map(t=>`
-    <div class="card" style="margin-bottom:12px;">
-      <div class="rowb" style="margin-bottom:10px;">
-        <div class="row" style="gap:10px;">
-          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;">${t.name[0]}</div>
-          <div><div style="font-weight:700;font-size:15px;">${esc(t.name)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">📍 ${esc(t.city)}</div></div>
-        </div>
-        <span style="font-size:26px;">${t.e}</span>
-      </div>
-      <p style="color:rgba(255,255,255,0.75);font-size:15px;line-height:1.7;font-style:italic;margin-bottom:10px;">"${esc(t.text)}"</p>
-      <div style="display:flex;gap:2px;">${"★".repeat(t.stars).split("").map(()=>`<span style="color:#C9A84C;font-size:17px;">★</span>`).join("")}</div>
-    </div>`).join("");
+function setCSub(sub){
+  cSub=sub;
+  document.getElementById("content-lessons").style.display=sub==="lessons"?"block":"none";
+  document.getElementById("content-packages").style.display=sub==="packages"?"block":"none";
+  ["lessons","packages"].forEach(s=>{const b=document.getElementById("csub-"+s);b.style.background=s===sub?"rgba(201,168,76,0.18)":"transparent";b.style.color=s===sub?"#C9A84C":"rgba(255,255,255,0.5)";b.style.borderColor=s===sub?"rgba(201,168,76,0.55)":"rgba(255,255,255,0.1)";});
+  if(sub==="lessons")renderLessons();
+  if(sub==="packages")renderPkgs();
 }
-function renderHomeTier(){
-  const tr=tiers(),ct=tr[cUser.tier]||DT.silver;
-  const b=document.getElementById("home-tier-badge");
-  b.style.background=ct.color+"22";b.style.borderColor=ct.border||ct.color+"55";
-  b.innerHTML=`<span>${ct.icon}</span><span style="color:${ct.color};font-size:13px;font-weight:700;">${esc(ct.name)}</span>`;
+function renderStats(){
+  const s=S();
+  document.getElementById("stat-total").textContent=s.users.length;
+  document.getElementById("stat-active").textContent=s.users.filter(u=>u.active).length;
+  document.getElementById("stat-otps").textContent=Object.values(s.otps||{}).filter(o=>!o.used&&Date.now()<o.expires).length;
+  document.getElementById("set-total-users").textContent=s.users.length;
 }
-function startBanner(){
-  renderBanner();
-  bTimer=setInterval(()=>{bannerIdx=(bannerIdx+1)%BANNERS.length;renderBanner();},4500);
-}
-function renderBanner(){
-  const b=BANNERS[bannerIdx];
-  document.getElementById("banner-bg").style.background=b.grad;
-  document.getElementById("banner-title").textContent=b.title;
-  document.getElementById("banner-sub").textContent=b.sub;
-  document.getElementById("banner-dots").innerHTML=BANNERS.map((_,i)=>`<div onclick="jumpB(${i})" style="width:${i===bannerIdx?"20px":"7px"};height:7px;border-radius:4px;background:${i===bannerIdx?"#fff":"rgba(255,255,255,0.3)"};cursor:pointer;transition:all .3s;"></div>`).join("");
-}
-function jumpB(i){bannerIdx=i;renderBanner();}
-
-// Catalog
-function renderCatalog(){
-  const tr=tiers(),ps=pkgs();
-  document.getElementById("catalog-list").innerHTML=ps.map(pkg=>{
-    const t=tr[pkg.tier]||DT[pkg.tier]||DT.silver;
-    const msg="Habari! Mimi ni "+cUser.name+". Nataka kujua zaidi kuhusu package ya "+t.name+" ("+pkg.price+pkg.period+").";
-    const isG=pkg.tier==="gold";
-    return`<div style="background:#0d1b2e;border:2px solid ${t.border};border-radius:24px;overflow:hidden;margin-bottom:18px;position:relative;">
-      ${pkg.popular?`<div style="position:absolute;top:16px;right:16px;background:#C9A84C;color:#000;font-size:11px;font-weight:900;padding:4px 13px;border-radius:20px;z-index:2;">MAARUFU ⭐</div>`:""}
-      ${pkg.image?`<div style="height:160px;overflow:hidden;"><img src="${esc(pkg.image)}" style="width:100%;height:100%;object-fit:cover;" alt=""/></div>`:""}
-      <div style="background:linear-gradient(135deg,${t.color}15,transparent);padding:24px 20px 16px;">
-        <div class="row" style="gap:10px;margin-bottom:10px;">
-          <span style="font-size:28px;">${t.icon}</span>
-          <div><div style="color:${t.color};font-weight:900;font-size:18px;">${esc(t.name)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">Level ${t.level}</div></div>
-        </div>
-        ${pkg.desc?`<p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.6;margin-bottom:10px;">${esc(pkg.desc)}</p>`:""}
-        <div class="row" style="align-items:baseline;gap:5px;">
-          <span style="color:#fff;font-weight:900;font-size:28px;">${esc(pkg.price)}</span>
-          <span style="color:rgba(255,255,255,0.4);font-size:14px;">${esc(pkg.period)}</span>
-        </div>
-      </div>
-      <div style="padding:0 20px 20px;">
-        <div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:16px;margin-bottom:18px;">
-          ${pkg.features.map(f=>`<div class="row" style="gap:10px;margin-bottom:10px;">
-            <div style="width:20px;height:20px;background:${t.color}22;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${t.color};font-size:12px;">✓</div>
-            <span style="color:rgba(255,255,255,0.75);font-size:14px;">${esc(f)}</span>
-          </div>`).join("")}
-        </div>
-        <a href="${wa(OWA,msg)}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:14px;text-decoration:none;font-weight:900;font-size:15px;color:${isG?"#000":"#fff"};background:${isG?"linear-gradient(135deg,#C9A84C,#f0c060)":"linear-gradient(135deg,#003366,#005599)"};box-shadow:0 6px 20px ${t.color}33;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="${isG?"#000":"#fff"}"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Agiza Sasa — WhatsApp
-        </a>
-      </div>
-    </div>`;
+function renderStatsTab(){
+  const s=S(),tiers=s.tiers||DT,total=s.users.length;
+  document.getElementById("stats-tiers").innerHTML=Object.values(tiers).map(t=>{
+    const n=s.users.filter(u=>u.tier===t.id).length,pct=total>0?Math.round((n/total)*100):0;
+    return`<div class="card" style="border:1px solid ${t.color}33;margin-bottom:10px;"><div class="rowb" style="margin-bottom:10px;"><div class="row" style="gap:10px;"><span style="font-size:22px;">${t.icon}</span><div><div style="font-weight:700;font-size:14px;">${esc(t.name)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">Level ${t.level}</div></div></div><div style="text-align:right;"><div style="font-weight:900;font-size:26px;color:${t.color};">${n}</div><div style="color:rgba(255,255,255,0.4);font-size:11px;">watumiaji</div></div></div><div style="height:8px;background:rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,${t.color},${t.color}88);border-radius:10px;"></div></div><div style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:5px;text-align:right;">${pct}%</div></div>`;
   }).join("");
+  const oe=Object.entries(s.otps||{});
+  document.getElementById("stats-otps").innerHTML=!oe.length?'<div style="color:rgba(255,255,255,0.3);font-size:14px;text-align:center;padding:20px;">Hakuna OTP zilizotolewa bado</div>':oe.map(([uid,otp])=>{const u=s.users.find(x=>x.id===+uid);if(!u)return"";const exp=otp.used||Date.now()>otp.expires;return`<div class="rowb" style="padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><div><div style="font-weight:600;font-size:14px;">${esc(u.name)}</div><div style="font-family:monospace;color:${exp?"#555":"#C9A84C"};font-size:14px;font-weight:700;">${esc(otp.code)}</div></div><span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:${exp?"rgba(80,80,80,0.2)":"rgba(201,168,76,0.18)"};color:${exp?"#666":"#C9A84C"};">${exp?(otp.used?"Imetumika":"Imekwisha"):"Hai"}</span></div>`;}).join("");
 }
-
-// Lessons
-function renderLessons(){
-  const tr=tiers(),ct=tr[cUser.tier]||DT.silver,ls=lessons();
-  const lb=document.getElementById("les-banner");
-  lb.style.background=ct.color+"12";lb.style.borderColor=ct.border||ct.color+"55";
-  document.getElementById("ltb-icon").textContent=ct.icon;
-  document.getElementById("ltb-name").textContent=ct.name;document.getElementById("ltb-name").style.color=ct.color;
-  document.getElementById("ltb-level").textContent="Unafikia masomo Level 1–"+ct.level;
-  let html="";
-  Object.values(tr).forEach(tier=>{
-    const tl=ls.filter(l=>l.tier===tier.id);if(!tl.length)return;
-    const locked=tier.level>ct.level;
-    html+=`<div style="margin-bottom:28px;">
-      <div class="rowb" style="margin-bottom:14px;">
-        <div class="row" style="gap:9px;">
-          <span style="font-size:20px;">${tier.icon}</span>
-          <div><div style="font-weight:800;font-size:15px;color:${locked?"rgba(255,255,255,0.35)":"#fff"};">${esc(tier.name)}</div><div style="color:rgba(255,255,255,0.3);font-size:12px;">Level ${tier.level} · ${tl.length} masomo ${locked?"🔒":""}</div></div>
-        </div>
-        ${locked?`<a href="${wa(OWA,"Habari! Nataka kupanda hadi "+tier.name+". Niambie zaidi.")}" target="_blank" style="background:${tier.color}18;border:1px solid ${tier.border};border-radius:20px;padding:5px 13px;color:${tier.color};font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">⬆️ Panda</a>`:""}
+function renderTierFilters(){
+  const s=S(),tiers=s.tiers||DT;
+  document.getElementById("tier-filters").innerHTML=`<button onclick="setFTier('all')" id="filter-all" style="padding:7px 14px;border-radius:20px;border:none;font-size:12px;font-weight:700;cursor:pointer;">Wote</button>`+Object.values(tiers).map(t=>`<button onclick="setFTier('${t.id}')" id="filter-${t.id}" style="padding:7px 14px;border-radius:20px;border:none;font-size:12px;font-weight:700;cursor:pointer;">${esc(t.sub)} (${s.users.filter(u=>u.tier===t.id).length})</button>`).join("");
+  applyFS();
+}
+function setFTier(t){fTier=t;applyFS();renderUsers();}
+function applyFS(){
+  const s=S(),tiers=s.tiers||DT;
+  ["all",...Object.keys(tiers)].forEach(k=>{const b=document.getElementById("filter-"+k);if(!b)return;const a=fTier===k;b.style.background=a?"linear-gradient(135deg,#C9A84C,#f0c060)":"rgba(255,255,255,0.07)";b.style.color=a?"#000":"rgba(255,255,255,0.6)";});
+}
+function renderUsers(){
+  const s=S(),tiers=s.tiers||DT,q=(document.getElementById("user-search").value||"").toLowerCase();
+  const fl=s.users.filter(u=>(u.name.toLowerCase().includes(q)||u.phone.includes(q))&&(fTier==="all"||u.tier===fTier));
+  if(!fl.length){document.getElementById("users-list").innerHTML='<div style="text-align:center;padding:44px 20px;color:rgba(255,255,255,0.3);"><div style="font-size:40px;margin-bottom:12px;">👤</div>Hakuna mtumiaji</div>';return;}
+  document.getElementById("users-list").innerHTML=fl.map(u=>uCard(u,s,tiers)).join("");
+  fl.forEach(u=>{const o=s.otps[u.id];if(o&&!o.used&&Date.now()<o.expires)startCD(u.id,o.expires);});
+}
+function uCard(u,s,tiers){
+  const t=tiers[u.tier]||DT.silver,otp=s.otps[u.id],has=otp&&!otp.used&&Date.now()<otp.expires;
+  return`<div id="ucard-${u.id}" style="background:#0d1b2e;border:1.5px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;margin-bottom:12px;">
+  <div onclick="tCard(${u.id})" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+    <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:19px;flex-shrink:0;border:2px solid ${t.color}44;">${esc(u.name[0])}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-weight:800;font-size:15px;">${esc(u.name)}</div>
+      <div style="color:rgba(255,255,255,0.4);font-size:13px;margin-bottom:4px;">${esc(u.phone)}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="badge" style="background:${t.color}18;border:1px solid ${t.color}44;color:${t.color};">${t.icon} ${esc(t.sub)}</span>
+        <span class="badge" style="background:${u.active?"rgba(74,222,128,0.12)":"rgba(239,68,68,0.12)"};border:1px solid ${u.active?"rgba(74,222,128,0.3)":"rgba(239,68,68,0.3)"};color:${u.active?"#4ade80":"#f87171"};">${u.active?"● Aktive":"● Imezuiwa"}</span>
+        ${has?`<span class="badge" style="background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.4);color:#C9A84C;">🔑 OTP Hai</span>`:""}
       </div>
-      ${tl.map(l=>lCard(l,locked,tier)).join("")}
-    </div>`;
+    </div>
+    <span id="uarr-${u.id}" style="color:rgba(255,255,255,0.3);font-size:18px;transition:.2s;">▾</span>
+  </div>
+  <div id="ubdy-${u.id}" style="display:none;border-top:1px solid rgba(255,255,255,0.07);padding:18px;">
+    <label class="lbl">BADILISHA TIER</label>
+    <div class="grid2" style="margin-bottom:14px;">${Object.values(tiers).map(tr=>`<button onclick="chTier(${u.id},'${tr.id}')" style="padding:10px;border-radius:10px;border:1.5px solid ${u.tier===tr.id?tr.color:"rgba(255,255,255,0.1)"};background:${u.tier===tr.id?tr.color+"20":"transparent"};color:${u.tier===tr.id?tr.color:"rgba(255,255,255,0.5)"};font-weight:700;font-size:12px;cursor:pointer;">${tr.icon} ${esc(tr.sub)}</button>`).join("")}</div>
+    ${has?`<div style="background:rgba(201,168,76,0.12);border:1.5px solid rgba(201,168,76,0.55);border-radius:14px;padding:14px;margin-bottom:12px;">
+      <div style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">✅ OTP INAYOENDELEA</div>
+      <div onclick="cpOTP(${u.id})" style="text-align:center;padding:12px;background:rgba(201,168,76,0.22);border-radius:10px;cursor:pointer;margin-bottom:4px;">
+        <div style="font-family:monospace;font-weight:900;font-size:1.6rem;color:#C9A84C;letter-spacing:4px;">${esc(otp.code)}</div>
+        <div id="cph-${u.id}" style="color:rgba(255,255,255,0.4);font-size:12px;margin-top:4px;">👆 Gusa kunakili</div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="rowb" style="margin-bottom:5px;"><span style="color:rgba(255,255,255,0.5);font-size:12px;">Muda uliobaki</span><span id="otr-${u.id}" style="font-family:monospace;font-weight:900;font-size:16px;color:#C9A84C;"></span></div>
+        <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;"><div id="obar-${u.id}" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#C9A84C,#f0c060);transition:width .3s;"></div></div>
+      </div>
+      <button onclick="rvOTP(${u.id})" style="width:100%;margin-top:10px;padding:8px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:#f87171;font-size:13px;font-weight:700;cursor:pointer;">❌ Uque OTP</button>
+    </div>`:""}
+    <button onclick="genOTP(${u.id})" style="width:100%;padding:13px;background:linear-gradient(135deg,#C9A84C,#f0c060);border:none;border-radius:12px;color:#000;font-weight:900;font-size:15px;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;">🔑 Generate &amp; Send OTP</button>
+    <button onclick="tgActive(${u.id})" style="width:100%;padding:11px;background:${u.active?"rgba(239,68,68,0.12)":"rgba(74,222,128,0.12)"};border:1px solid ${u.active?"rgba(239,68,68,0.3)":"rgba(74,222,128,0.3)"};border-radius:10px;color:${u.active?"#f87171":"#4ade80"};font-weight:700;font-size:13px;cursor:pointer;">${u.active?"🚫 Zuia Akaunti":"✅ Fungua Akaunti"}</button>
+  </div>
+</div>`;
+}
+function tCard(id){const b=document.getElementById("ubdy-"+id),a=document.getElementById("uarr-"+id),o=b.style.display==="block";b.style.display=o?"none":"block";a.style.transform=o?"rotate(0)":"rotate(180deg)";}
+function startCD(id,exp){
+  if(otpT[id])clearInterval(otpT[id]);
+  otpT[id]=setInterval(()=>{
+    const rem=Math.max(0,Math.ceil((exp-Date.now())/1000));
+    const el=document.getElementById("otr-"+id),bar=document.getElementById("obar-"+id);
+    if(!el){clearInterval(otpT[id]);return;}
+    el.textContent=rem+"s";el.style.color=rem<20?"#f87171":"#C9A84C";
+    if(bar){bar.style.width=(rem/90*100)+"%";bar.style.background=rem<20?"linear-gradient(90deg,#ef4444,#f97316)":"linear-gradient(90deg,#C9A84C,#f0c060)";}
+    if(rem<=0){clearInterval(otpT[id]);renderUsers();}
+  },300);
+}
+function chTier(id,tier){uS(s=>{const u=s.users.find(x=>x.id===id);if(u)u.tier=tier;});renderUsers();}
+function tgActive(id){uS(s=>{const u=s.users.find(x=>x.id===id);if(u)u.active=!u.active;});renderUsers();}
+function rvOTP(id){uS(s=>{if(s.otps[id])s.otps[id].used=true;});renderUsers();}
+function cpOTP(id){const o=S().otps[id];if(!o)return;navigator.clipboard?.writeText(o.code).catch(()=>{});const el=document.getElementById("cph-"+id);if(el){el.textContent="✅ Imenakiliwa!";setTimeout(()=>{if(el)el.textContent="👆 Gusa kunakili";},2000);}}
+function genOTP(id){const s=S(),u=s.users.find(x=>x.id===id);if(!u)return;const code=gc(),exp=Date.now()+90000;uS(s=>{s.otps[id]={code,expires:exp,used:false};});window.open(wa(u.phone,`Habari ${u.name}, kodi yako ya Premium ni *${code}*. Inatumika kwa sekunde 90 tu. 🔐\n_Sponsored Ads Tanzania_`),"_blank");renderUsers();}
+function showAddUser(){
+  const s=S(),tiers=s.tiers||DT;addTS="silver";
+  document.getElementById("add-name").value="";document.getElementById("add-phone").value="";document.getElementById("add-err").style.display="none";
+  document.getElementById("add-tier-btns").innerHTML=Object.values(tiers).map(t=>`<button onclick="selAT('${t.id}')" id="at-${t.id}" style="padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-weight:700;font-size:12px;cursor:pointer;">${t.icon} ${esc(t.sub)}</button>`).join("");
+  selAT("silver");showModal("modal-add-user");
+}
+function selAT(id){addTS=id;const s=S(),tiers=s.tiers||DT;Object.keys(tiers).forEach(k=>{const b=document.getElementById("at-"+k);if(!b)return;const t=tiers[k],a=k===id;b.style.borderColor=a?t.color:"rgba(255,255,255,0.1)";b.style.background=a?t.color+"20":"transparent";b.style.color=a?t.color:"rgba(255,255,255,0.5)";});}
+function submitAddUser(){
+  const name=document.getElementById("add-name").value.trim(),phone=document.getElementById("add-phone").value.replace(/\D/g,""),err=document.getElementById("add-err");
+  if(!name){err.textContent="⚠️ Jaza jina";err.style.display="block";return;}
+  if(phone.length<9){err.textContent="⚠️ Digits 9 za simu zinahitajika";err.style.display="block";return;}
+  uS(s=>{s.users.push({id:Date.now(),name,phone:"+255"+phone.slice(0,9),tier:addTS,joinDate:new Date().toISOString().slice(0,10),active:true});});
+  hideModal("modal-add-user");renderUsers();renderStats();renderTierFilters();
+}
+function renderTiersEd(){
+  const s=S(),tiers=s.tiers||DT;
+  document.getElementById("tiers-editor").innerHTML=Object.values(tiers).map(t=>`<div style="background:#0d1b2e;border:1.5px solid ${t.color}44;border-radius:18px;padding:18px;margin-bottom:14px;"><div class="row" style="gap:10px;margin-bottom:14px;"><span style="font-size:26px;">${t.icon}</span><div><div style="color:${t.color};font-weight:900;font-size:15px;">Level ${t.level}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">Tier ID: ${t.id}</div></div></div><label class="lbl">JINA KAMILI (CAPS)</label><input value="${esc(t.name)}" oninput="sTF('${t.id}','name',this.value)" class="inp" style="font-weight:700;border-color:${t.color}44;margin-bottom:10px;"/><div class="grid2"><div><label class="lbl">SUB-TITLE</label><input value="${esc(t.sub)}" oninput="sTF('${t.id}','sub',this.value)" class="inp" style="border-color:${t.color}44;"/></div><div><label class="lbl">ICON / EMOJI</label><input value="${esc(t.icon)}" oninput="sTF('${t.id}','icon',this.value)" class="inp" style="font-size:20px;text-align:center;border-color:${t.color}44;"/></div></div></div>`).join("");
+}
+function sTF(id,f,v){uS(s=>{if(!s.tiers)s.tiers=DT;if(s.tiers[id])s.tiers[id][f]=v;});}
+function renderLessons(){
+  const s=S(),tiers=s.tiers||DT,lessons=s.lessons||DL;
+  let html=lessons.length?"":'<div style="text-align:center;padding:44px 20px;color:rgba(255,255,255,0.3);"><div style="font-size:40px;margin-bottom:12px;">🎬</div>Hakuna masomo bado</div>';
+  Object.values(tiers).forEach(tier=>{
+    const tl=lessons.filter(l=>l.tier===tier.id);if(!tl.length)return;
+    html+=`<div style="margin-bottom:22px;"><div class="row" style="gap:8px;margin-bottom:10px;"><span style="font-size:18px;">${tier.icon}</span><span style="color:${tier.color};font-weight:800;font-size:14px;">${esc(tier.name)}</span><span class="badge" style="background:${tier.color}18;border:1px solid ${tier.color}33;color:${tier.color};">${tl.length} masomo</span></div>`;
+    tl.forEach(l=>{
+      if(eLid===l.id){html+=lEF(l,tiers);return;}
+      html+=`<div style="background:#0d1b2e;border:1.5px solid ${tier.color}22;border-radius:16px;padding:16px;margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;"><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;margin-bottom:3px;">${esc(l.title)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">⏱ ${esc(l.dur)}</div></div><div style="display:flex;gap:6px;flex-shrink:0;"><button onclick="sEL(${l.id})" style="padding:6px 12px;background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.44);border-radius:8px;color:#C9A84C;font-size:12px;font-weight:700;cursor:pointer;">✏️ Edit</button><button onclick="dL(${l.id})" style="padding:6px 10px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#f87171;font-size:12px;font-weight:700;cursor:pointer;">🗑️</button></div></div><div style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:6px;line-height:1.5;">${esc(l.desc)}</div>${l.videoUrl?'<div style="color:#4ade80;font-size:12px;font-weight:700;">✅ Video imewekwa</div>':'<div style="color:#f87171;font-size:12px;">⚠️ Hakuna video — weka URL</div>'}</div>`;
+    });
+    html+="</div>";
   });
   document.getElementById("lessons-list").innerHTML=html;
 }
-function lCard(l,locked,tier){
-  return`<div style="background:#0d1b2e;border:1.5px solid ${locked?"rgba(255,255,255,0.06)":tier.border};border-radius:20px;overflow:hidden;margin-bottom:14px;">
-    <div style="background:${locked?"#0a1020":"linear-gradient(135deg,#003366,#005599)"};padding:20px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-      <div style="flex:1;min-width:0;">
-        <div style="display:inline-flex;align-items:center;gap:5px;background:${tier.color}22;border:1px solid ${tier.color}44;border-radius:20px;padding:3px 10px;margin-bottom:8px;">
-          <span style="font-size:12px;">${tier.icon}</span><span style="color:${tier.color};font-size:11px;font-weight:700;">${esc(tier.sub)}</span>
-        </div>
-        <div style="color:${locked?"rgba(255,255,255,0.35)":"#fff"};font-weight:800;font-size:17px;line-height:1.3;">${esc(l.title)}</div>
-        <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-top:5px;">⏱ ${esc(l.dur)} · 👁 ${esc(l.views)}</div>
-      </div>
-      <div style="font-size:34px;flex-shrink:0;">${locked?"🔒":"🎬"}</div>
-    </div>
-    <div style="padding:16px 18px;">
-      <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:14px;">${esc(l.desc)}</p>
-      ${locked
-        ?`<a href="${wa(OWA,"Habari! Nataka kupanda hadi "+tier.name+". Niambie zaidi.")}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:${tier.color}15;border:1.5px solid ${tier.border};border-radius:12px;color:${tier.color};font-weight:800;font-size:15px;text-decoration:none;">⬆️ Panda hadi ${esc(tier.name)}</a>`
-        :`<button onclick="togLesson(${l.id})" id="lbtn-${l.id}" style="width:100%;padding:14px;background:linear-gradient(135deg,#003366,#005599);border:none;border-radius:12px;color:#fff;font-weight:800;font-size:15px;">▶ Tazama Sasa</button>
-         <div id="lvid-${l.id}" style="display:none;margin-top:12px;border-radius:12px;overflow:hidden;background:#000;"></div>`
-      }
-    </div>
-  </div>`;
+function lEF(l,tiers){return`<div style="background:#0d1b2e;border:1.5px solid rgba(201,168,76,0.44);border-radius:16px;padding:16px;margin-bottom:10px;"><label class="lbl">KICHWA</label><input id="let-${l.id}" value="${esc(l.title)}" class="inp" style="margin-bottom:10px;"/><label class="lbl">MAELEZO</label><textarea id="led-${l.id}" rows="3" class="inp" style="resize:vertical;margin-bottom:10px;">${esc(l.desc)}</textarea><div class="grid2" style="margin-bottom:10px;"><div><label class="lbl">MUDA</label><input id="leu-${l.id}" value="${esc(l.dur)}" class="inp" placeholder="12:30"/></div><div><label class="lbl">TIER</label><select id="ler-${l.id}" class="inp" style="appearance:none;">${Object.values(tiers).map(t=>`<option value="${t.id}"${l.tier===t.id?" selected":""}>${t.icon} ${t.sub}</option>`).join("")}</select></div></div><label class="lbl">🎬 VIDEO URL</label><input id="lev-${l.id}" value="${esc(l.videoUrl||"")}" class="inp" placeholder="https://youtube.com/watch?v=..." style="margin-bottom:4px;"/><div style="color:rgba(255,255,255,0.3);font-size:12px;margin-bottom:12px;">YouTube link au URL ya .mp4</div><div class="grid2"><button onclick="cEL()" style="padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.6);font-weight:700;font-size:14px;cursor:pointer;">Funga</button><button onclick="svL(${l.id})" style="padding:12px;background:linear-gradient(135deg,#C9A84C,#f0c060);border:none;border-radius:10px;color:#000;font-weight:900;font-size:14px;cursor:pointer;">✓ Hifadhi</button></div></div>`;}
+function showLessonForm(){
+  const s=S(),tiers=s.tiers||DT;
+  document.getElementById("lesson-form-wrap").innerHTML=`<div style="background:#0d1b2e;border:1.5px solid rgba(201,168,76,0.44);border-radius:16px;padding:16px;margin-bottom:14px;"><label class="lbl">KICHWA CHA SOMO</label><input id="lnt" class="inp" placeholder="mf. Facebook Ads Mastery" style="margin-bottom:10px;"/><label class="lbl">MAELEZO</label><textarea id="lnd" rows="3" class="inp" style="resize:vertical;margin-bottom:10px;" placeholder="Maelezo mafupi..."></textarea><div class="grid2" style="margin-bottom:10px;"><div><label class="lbl">MUDA</label><input id="lnu" class="inp" placeholder="12:30"/></div><div><label class="lbl">TIER</label><select id="lnr" class="inp" style="appearance:none;">${Object.values(tiers).map(t=>`<option value="${t.id}">${t.icon} ${t.sub}</option>`).join("")}</select></div></div><label class="lbl">🎬 VIDEO URL</label><input id="lnv" class="inp" placeholder="https://youtube.com/watch?v=..." style="margin-bottom:4px;"/><div style="color:rgba(255,255,255,0.3);font-size:12px;margin-bottom:12px;">YouTube link au URL ya .mp4</div><div id="lnerr" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px;"></div><div class="grid2"><button onclick="hLF()" style="padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.6);font-weight:700;font-size:14px;cursor:pointer;">Funga</button><button onclick="subNL()" style="padding:12px;background:linear-gradient(135deg,#C9A84C,#f0c060);border:none;border-radius:10px;color:#000;font-weight:900;font-size:14px;cursor:pointer;">✓ Hifadhi</button></div></div>`;
 }
-function togLesson(id){
-  const btn=document.getElementById("lbtn-"+id),vid=document.getElementById("lvid-"+id);
-  if(!vid)return;
-  const open=vid.style.display==="block";
-  if(open){vid.style.display="none";vid.innerHTML="";if(btn)btn.textContent="▶ Tazama Sasa";return;}
-  const l=lessons().find(x=>x.id===id);if(!l)return;
-  if(btn)btn.textContent="⏸ Simamisha";
-  vid.style.display="block";
-  if(l.videoUrl){
-    const yt=ytId(l.videoUrl);
-    vid.innerHTML=yt
-      ?`<div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe></div>`
-      :`<video src="${esc(l.videoUrl)}" controls autoplay style="width:100%;display:block;"></video>`;
-  } else {
-    vid.innerHTML=`<div style="position:relative;width:100%;padding-bottom:56.25%;background:#000;"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:44px;margin-bottom:12px;">🎬</div><div style="color:rgba(255,255,255,0.5);font-size:14px;text-align:center;padding:0 20px;line-height:1.6;">Video bado haijawekwa<br/><span style="color:rgba(255,255,255,0.25);font-size:12px;">Admin ataongeza video hivi karibuni</span></div></div></div>`;
-  }
+function hLF(){document.getElementById("lesson-form-wrap").innerHTML="";}
+function subNL(){
+  const t=document.getElementById("lnt").value.trim(),d=document.getElementById("lnd").value.trim(),u=document.getElementById("lnu").value.trim(),r=document.getElementById("lnr").value,v=document.getElementById("lnv").value.trim(),e=document.getElementById("lnerr");
+  if(!t){e.textContent="⚠️ Jaza kichwa cha somo";e.style.display="block";return;}
+  if(!d){e.textContent="⚠️ Jaza maelezo";e.style.display="block";return;}
+  uS(s=>{if(!s.lessons)s.lessons=DL;s.lessons.push({id:Date.now(),tier:r,title:t,desc:d,dur:u||"00:00",views:"0",videoUrl:v});});
+  hLF();renderLessons();
 }
-
-// Settings
+function sEL(id){eLid=id;renderLessons();}
+function cEL(){eLid=null;renderLessons();}
+function svL(id){
+  const t=document.getElementById("let-"+id).value.trim(),d=document.getElementById("led-"+id).value.trim(),u=document.getElementById("leu-"+id).value.trim(),r=document.getElementById("ler-"+id).value,v=document.getElementById("lev-"+id).value.trim();
+  if(!t)return;uS(s=>{const l=s.lessons.find(x=>x.id===id);if(l){l.title=t;l.desc=d;l.dur=u;l.tier=r;l.videoUrl=v;}});eLid=null;renderLessons();
+}
+function dL(id){if(window.confirm("Futa somo hili?")){uS(s=>{s.lessons=s.lessons.filter(x=>x.id!==id);});renderLessons();}}
+function renderPkgs(){
+  const s=S(),tiers=s.tiers||DT,pkgs=s.packages||DP;
+  document.getElementById("packages-list").innerHTML=pkgs.map(pkg=>{
+    const t=tiers[pkg.tier]||DT[pkg.tier]||DT.silver,key=pkg.id||pkg.tier,isD=!pkg.id;
+    if(ePkg===key)return pEF(pkg,tiers);
+    return`<div style="background:#0d1b2e;border:1.5px solid ${t.color}44;border-radius:20px;overflow:hidden;margin-bottom:16px;"><div style="position:relative;width:100%;height:130px;background:linear-gradient(135deg,${t.color}22,#003366);display:flex;align-items:center;justify-content:center;overflow:hidden;">${pkg.image?`<img src="${esc(pkg.image)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" alt=""/>`:`<div style="text-align:center;"><div style="font-size:36px;">${t.icon}</div><div style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:4px;">Bado hakuna picha</div></div>`}<input id="pii-${key}" type="file" accept="image/*" style="display:none;" onchange="upPI('${key}',event)"/><button onclick="document.getElementById('pii-${key}').click()" style="position:absolute;bottom:10px;right:10px;padding:7px 13px;background:rgba(0,0,0,0.7);border:1px solid ${t.color}55;border-radius:20px;color:${t.color};font-size:12px;font-weight:700;cursor:pointer;">📤 ${pkg.image?"Badilisha":"Weka Picha"}</button>${pkg.image?`<button onclick="clPI('${key}')" style="position:absolute;bottom:10px;left:10px;padding:7px 10px;background:rgba(239,68,68,0.8);border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">🗑️</button>`:""}</div><div style="padding:16px;"><div class="rowb" style="margin-bottom:10px;"><div class="row" style="gap:8px;"><span style="font-size:20px;">${t.icon}</span><div><div style="color:${t.color};font-weight:900;font-size:15px;">${esc(t.name)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">Level ${t.level}</div></div></div><div style="display:flex;gap:6px;"><button onclick="sEP('${key}')" style="padding:7px 12px;background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.44);border-radius:8px;color:#C9A84C;font-size:12px;font-weight:700;cursor:pointer;">✏️</button>${!isD?`<button onclick="dPkg('${key}')" style="padding:7px 10px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#f87171;font-size:12px;font-weight:700;cursor:pointer;">🗑️</button>`:""}</div></div><div style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:6px;line-height:1.5;">${pkg.desc||"<span style='color:rgba(255,255,255,0.2);'>Hakuna maelezo</span>"}</div><div class="row" style="gap:5px;align-items:baseline;margin-bottom:8px;"><span style="color:#fff;font-weight:900;font-size:20px;">${esc(pkg.price)}</span><span style="color:rgba(255,255,255,0.4);font-size:13px;">${esc(pkg.period)}</span>${pkg.popular?`<span class="badge" style="background:#C9A84C;color:#000;margin-left:6px;">MAARUFU</span>`:""}</div><div style="color:rgba(255,255,255,0.3);font-size:12px;">${pkg.features.length} huduma</div></div></div>`;
+  }).join("");
+}
+function pEF(pkg,tiers){
+  const t=tiers[pkg.tier]||DT[pkg.tier]||DT.silver,key=pkg.id||pkg.tier;
+  const fh=pkg.features.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div style="flex:1;padding:9px 12px;background:rgba(255,255,255,0.05);border-radius:8px;color:rgba(255,255,255,0.8);font-size:13px;">${esc(f)}</div><button onclick="rmPF('${key}',${i})" style="width:30px;height:30px;background:rgba(239,68,68,0.15);border:none;border-radius:8px;color:#f87171;cursor:pointer;font-size:14px;flex-shrink:0;">×</button></div>`).join("");
+  return`<div style="background:#0d1b2e;border:1.5px solid ${t.color}55;border-radius:18px;padding:18px;margin-bottom:16px;"><div style="color:#C9A84C;font-size:13px;font-weight:700;margin-bottom:14px;">✏️ Hariri — ${esc(t.name)}</div><label class="lbl">MAELEZO MAFUPI</label><textarea id="pde-${key}" rows="2" class="inp" style="resize:vertical;margin-bottom:10px;">${esc(pkg.desc||"")}</textarea><div class="grid2" style="margin-bottom:10px;"><div><label class="lbl">BEI</label><input id="ppr-${key}" value="${esc(pkg.price)}" class="inp"/></div><div><label class="lbl">KIPINDI</label><input id="ppe-${key}" value="${esc(pkg.period)}" class="inp"/></div></div><div class="row" style="gap:10px;margin-bottom:12px;"><label class="lbl" style="margin-bottom:0;">MAARUFU ⭐</label><button onclick="tgPP('${key}')" id="ppb-${key}" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${pkg.popular?"#C9A84C":"rgba(255,255,255,0.12)"};background:${pkg.popular?"rgba(201,168,76,0.22)":"rgba(255,255,255,0.06)"};color:${pkg.popular?"#C9A84C":"rgba(255,255,255,0.4)"};">${pkg.popular?"✅ Ndio":"Hapana"}</button></div><label class="lbl">HUDUMA (${pkg.features.length})</label><div id="pfe-${key}">${fh}</div><div style="display:flex;gap:8px;margin-top:8px;margin-bottom:14px;"><input id="pfa-${key}" placeholder="Ongeza huduma mpya..." class="inp" style="flex:1;" onkeydown="if(event.key==='Enter')adPF('${key}')"/><button onclick="adPF('${key}')" style="padding:10px 14px;background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.44);border-radius:10px;color:#C9A84C;font-weight:700;font-size:18px;cursor:pointer;flex-shrink:0;">+</button></div><div class="grid2"><button onclick="cEP()" style="padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.6);font-weight:700;font-size:14px;cursor:pointer;">Funga</button><button onclick="svPkg('${key}')" style="padding:12px;background:linear-gradient(135deg,#C9A84C,#f0c060);border:none;border-radius:10px;color:#000;font-weight:900;font-size:14px;cursor:pointer;">✓ Hifadhi</button></div></div>`;
+}
+function sEP(k){ePkg=k;renderPkgs();}
+function cEP(){ePkg=null;renderPkgs();}
+function svPkg(k){
+  const d=document.getElementById("pde-"+k).value.trim(),p=document.getElementById("ppr-"+k).value.trim(),pe=document.getElementById("ppe-"+k).value.trim();
+  uS(s=>{const pkg=(s.packages||DP).find(x=>(x.id||x.tier)===k);if(pkg){pkg.desc=d;pkg.price=p;pkg.period=pe;}});ePkg=null;renderPkgs();
+}
+function tgPP(k){uS(s=>{const p=(s.packages||DP).find(x=>(x.id||x.tier)===k);if(p)p.popular=!p.popular;});renderPkgs();}
+function adPF(k){const inp=document.getElementById("pfa-"+k),v=inp.value.trim();if(!v)return;uS(s=>{const p=(s.packages||DP).find(x=>(x.id||x.tier)===k);if(p)p.features.push(v);});inp.value="";renderPkgs();sEP(k);}
+function rmPF(k,i){uS(s=>{const p=(s.packages||DP).find(x=>(x.id||x.tier)===k);if(p)p.features.splice(i,1);});renderPkgs();sEP(k);}
+function upPI(k,e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{uS(s=>{const p=(s.packages||DP).find(x=>(x.id||x.tier)===k);if(p)p.image=ev.target.result;});renderPkgs();};r.readAsDataURL(f);}
+function clPI(k){uS(s=>{const p=(s.packages||DP).find(x=>(x.id||x.tier)===k);if(p)p.image="";});renderPkgs();}
+function dPkg(k){if(window.confirm("Futa package hii?")){uS(s=>{s.packages=(s.packages||DP).filter(x=>(x.id||x.tier)!==k);});renderPkgs();}}
+let nPF=[],nPPop=false;
+function showNewPackageForm(){
+  nPF=[];nPPop=false;const s=S(),tiers=s.tiers||DT;
+  document.getElementById("new-pkg-form-wrap").innerHTML=`<div style="background:#0d1b2e;border:1.5px solid rgba(201,168,76,0.55);border-radius:18px;padding:18px;margin-bottom:16px;"><div style="color:#C9A84C;font-size:13px;font-weight:700;margin-bottom:14px;">✨ Package Mpya</div><label class="lbl">TIER</label><select id="pnt" class="inp" style="appearance:none;margin-bottom:10px;">${Object.values(tiers).map(t=>`<option value="${t.id}">${t.icon} ${t.sub}</option>`).join("")}</select><label class="lbl">MAELEZO MAFUPI</label><textarea id="pnd" rows="2" class="inp" style="resize:vertical;margin-bottom:10px;" placeholder="Eleza package hii..."></textarea><div class="grid2" style="margin-bottom:10px;"><div><label class="lbl">BEI</label><input id="pnp" class="inp" placeholder="TSh 150,000"/></div><div><label class="lbl">KIPINDI</label><input id="pnpe" class="inp" value="/mwezi"/></div></div><div class="row" style="gap:10px;margin-bottom:12px;"><label class="lbl" style="margin-bottom:0;">MAARUFU ⭐</label><button onclick="tgNPP()" id="npopb" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);">Hapana</button></div><label class="lbl">HUDUMA</label><div id="npfl"></div><div style="display:flex;gap:8px;margin-top:8px;margin-bottom:14px;"><input id="npfi" placeholder="Ongeza huduma..." class="inp" style="flex:1;" onkeydown="if(event.key==='Enter')adNPF()"/><button onclick="adNPF()" style="padding:10px 14px;background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.44);border-radius:10px;color:#C9A84C;font-weight:700;font-size:18px;cursor:pointer;flex-shrink:0;">+</button></div><div id="nperr" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px;"></div><div class="grid2"><button onclick="hNPF()" style="padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.6);font-weight:700;font-size:14px;cursor:pointer;">Funga</button><button onclick="subNP()" style="padding:12px;background:linear-gradient(135deg,#C9A84C,#f0c060);border:none;border-radius:10px;color:#000;font-weight:900;font-size:14px;cursor:pointer;">✓ Hifadhi</button></div></div>`;
+}
+function hNPF(){document.getElementById("new-pkg-form-wrap").innerHTML="";}
+function rfNPF(){const w=document.getElementById("npfl");if(w)w.innerHTML=nPF.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div style="flex:1;padding:9px 12px;background:rgba(255,255,255,0.05);border-radius:8px;color:rgba(255,255,255,0.8);font-size:13px;">${esc(f)}</div><button onclick="rmNPF(${i})" style="width:30px;height:30px;background:rgba(239,68,68,0.15);border:none;border-radius:8px;color:#f87171;cursor:pointer;">×</button></div>`).join("");}
+function tgNPP(){nPPop=!nPPop;const b=document.getElementById("npopb");if(b){b.textContent=nPPop?"✅ Ndio":"Hapana";b.style.background=nPPop?"rgba(201,168,76,0.22)":"rgba(255,255,255,0.06)";b.style.color=nPPop?"#C9A84C":"rgba(255,255,255,0.4)";b.style.borderColor=nPPop?"#C9A84C":"rgba(255,255,255,0.12)";}}
+function adNPF(){const i=document.getElementById("npfi"),v=i.value.trim();if(!v)return;nPF.push(v);i.value="";rfNPF();}
+function rmNPF(i){nPF.splice(i,1);rfNPF();}
+function subNP(){
+  const tier=document.getElementById("pnt").value,desc=document.getElementById("pnd").value.trim(),price=document.getElementById("pnp").value.trim(),period=document.getElementById("pnpe").value.trim(),e=document.getElementById("nperr");
+  if(!price){e.textContent="⚠️ Jaza bei";e.style.display="block";return;}
+  if(!nPF.length){e.textContent="⚠️ Ongeza huduma angalau moja";e.style.display="block";return;}
+  uS(s=>{if(!s.packages)s.packages=DP;s.packages.push({id:Date.now(),tier,price,period,desc,popular:nPPop,image:"",features:[...nPF]});});
+  hNPF();renderPkgs();
+}
 function renderSettings(){
-  const s=rS(),tr=tiers(),t=tr[cUser.tier]||DT.silver;
-  document.getElementById("set-av").textContent=cUser.name[0];document.getElementById("set-av").style.borderColor=t.color;
-  document.getElementById("set-name-d").textContent=cUser.name;document.getElementById("set-phone-d").textContent=cUser.phone;
-  document.getElementById("set-name-inp").value=cUser.name;
-  document.getElementById("set-t-icon").textContent=t.icon;document.getElementById("set-t-name").textContent=t.name;document.getElementById("set-t-name").style.color=t.color;
-  document.getElementById("set-tier-badge").style.background=t.color+"18";document.getElementById("set-tier-badge").style.borderColor=t.border||t.color+"55";
-  document.getElementById("set-pkg-icon").textContent=t.icon;document.getElementById("set-pkg-name").textContent=t.name;document.getElementById("set-pkg-name").style.color=t.color;
-  document.getElementById("set-pkg-card").style.borderColor=t.border||t.color+"44";
-  document.getElementById("set-pkg-lvl").textContent="Level "+t.level+" Access";
-  document.getElementById("set-upgrade").href=wa(OWA,"Habari! Nataka kupanda tier yangu. Sasa nipo "+t.name+". Niambie kuhusu package za juu zaidi.");
-  document.getElementById("set-app-name").textContent=s?.brandName||"SAT";
-  document.getElementById("set-wa-support").href=wa(OWA,"Habari! Mimi ni "+cUser.name+" ("+cUser.phone+"). Ninahitaji msaada.");
+  const s=S();
+  document.getElementById("brand-name-inp").value=s.brandName||"";
+  document.getElementById("set-total-users").textContent=s.users.length;
+  if(s.logo){document.getElementById("set-logo-emoji").style.display="none";const i=document.getElementById("set-logo-img");i.src=s.logo;i.style.display="block";document.getElementById("set-logo-status").textContent="Logo imewekwa ✅";document.getElementById("del-logo-btn").style.display="block";}
+  else{document.getElementById("set-logo-emoji").style.display="";document.getElementById("set-logo-img").style.display="none";document.getElementById("set-logo-status").textContent="Bado hujaweka logo";document.getElementById("del-logo-btn").style.display="none";}
 }
-function saveProfile(){
-  const name=document.getElementById("set-name-inp").value.trim()||cUser.name;
-  cUser={...cUser,name};const btn=document.getElementById("save-btn");
-  btn.textContent="✅ Imehifadhiwa!";setTimeout(()=>{btn.textContent="Hifadhi Mabadiliko";},2000);
-  renderSettings();updateHdr();
-}
-
-// Unlock
-function showUnlock(){document.getElementById("unlock-code").value="";document.getElementById("unlock-err").style.display="none";document.getElementById("unlock-ok").style.display="none";document.getElementById("unlock-form").style.display="block";document.getElementById("modal-unlock").style.display="flex";}
-function hideUnlock(){document.getElementById("modal-unlock").style.display="none";}
-function tryUnlock(){
-  const code=document.getElementById("unlock-code").value.trim().toUpperCase();
-  const err=document.getElementById("unlock-err"),s=rS();
-  const otp=s?.otps?.[cUser.id];
-  if(!otp){err.textContent="⚠️ Hakuna namba iliyotolewa kwa akaunti yako. Wasiliana na admin.";err.style.display="block";return;}
-  if(otp.used){err.textContent="⚠️ Namba hii imeshakutumiwa. Omba mpya kwa admin.";err.style.display="block";return;}
-  if(Date.now()>otp.expires){err.textContent="⚠️ Namba imekwisha muda. Omba mpya kwa admin.";err.style.display="block";return;}
-  if(otp.code.toUpperCase()!==code){err.textContent="⚠️ Namba si sahihi. Angalia vizuri uliyopewa.";err.style.display="block";return;}
-  s.otps[cUser.id].used=true;
-  try{localStorage.setItem("sat_store",JSON.stringify(s));}catch{}
-  const up=s.users?.find(u=>u.id===cUser.id);
-  if(up)cUser={...up,isKnown:true};
-  document.getElementById("unlock-form").style.display="none";
-  document.getElementById("unlock-ok").style.display="block";
-  setTimeout(()=>{hideUnlock();updateHdr();if(cTab==="lessons")renderLessons();},1600);
-}
+function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{uS(s=>{s.logo=ev.target.result;});renderSettings();updateHdr();};r.readAsDataURL(f);}
+function deleteLogo(){uS(s=>{s.logo=null;});renderSettings();updateHdr();}
+function saveBrandName(){uS(s=>{s.brandName=document.getElementById("brand-name-inp").value;});updateHdr();}
+function clearAllOTPs(){if(window.confirm("Futa OTP zote?")){uS(s=>{s.otps={};});renderStats();}}
+function downloadBackup(){const b=new Blob([JSON.stringify(S(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="sat_backup.json";a.click();}
 </script>
 </body>
 </html>
