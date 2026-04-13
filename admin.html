@@ -1,884 +1,574 @@
-import { useState, useEffect, useRef } from "react";
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sponsored Ads Tanzania</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;margin:0;padding:0;}
+body{background:#050f1a;color:#f0f0f0;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0a1628;}::-webkit-scrollbar-thumb{background:#C9A84C55;border-radius:4px;}
+input,textarea,select,button,a{font-family:inherit;box-sizing:border-box;}
+button{cursor:pointer;}
+.inp{width:100%;padding:14px 15px;border-radius:12px;background:rgba(255,255,255,0.07);color:#fff;font-size:15px;border:1.5px solid rgba(255,255,255,0.12);outline:none;}
+.inp:focus{border-color:#C9A84C88;}
+.gold-btn{background:linear-gradient(135deg,#C9A84C,#f0c060);color:#000;font-weight:900;border:none;border-radius:14px;padding:17px;width:100%;font-size:17px;}
+.row{display:flex;align-items:center;}
+.rowb{display:flex;align-items:center;justify-content:space-between;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;}
+.card{background:#0d1b2e;border-radius:20px;border:1px solid rgba(0,51,102,0.4);padding:18px;}
+.sec-title{color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:2px;font-weight:700;margin-bottom:10px;}
+</style>
+</head>
+<body>
 
-const OWNER_WA = "255674695549";
-const BRAND = "#003366";
-const GOLD = "#C9A84C";
+<!-- SPLASH -->
+<div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:#003366;transition:opacity .4s;">
+  <div style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.1);border:3px solid #C9A84C;box-shadow:0 0 60px rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:32px;flex-shrink:0;">
+    <span id="sp-emoji" style="font-size:54px;">📡</span>
+    <img id="sp-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+  </div>
+  <h1 id="sp-title" style="color:#fff;font-weight:900;font-size:clamp(1.3rem,5vw,2rem);text-align:center;margin-bottom:8px;">Sponsored Ads Tanzania</h1>
+  <p style="color:#C9A84C;font-size:13px;letter-spacing:4px;font-weight:700;margin-bottom:52px;">DIGITAL MARKETING EXPERTS</p>
+  <div style="width:240px;height:5px;background:rgba(255,255,255,0.15);border-radius:10px;overflow:hidden;">
+    <div id="sp-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#C9A84C,#fff);border-radius:10px;transition:width .1s linear;"></div>
+  </div>
+  <p style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:14px;">Inapakia...</p>
+</div>
 
-// ── Default tier config (editable) ───────────────────
-const DEFAULT_TIERS = {
-  silver: { id:"silver", level:1, name:"BASIC ADS",            sub:"Silver",     color:"#94a3b8", icon:"🥈" },
-  green:  { id:"green",  level:2, name:"BUSINESS GROWTH",      sub:"Green",      color:"#22c55e", icon:"🟢" },
-  gold:   { id:"gold",   level:3, name:"PREMIUM MENTORSHIP",   sub:"Gold",       color:GOLD,      icon:"🥇" },
-  royal:  { id:"royal",  level:4, name:"CORPORATE MANAGEMENT", sub:"Royal Blue", color:"#60a5fa", icon:"👑" },
-};
-
-const DEFAULT_LESSONS = [
-  { id:1, tier:"silver", title:"Utangulizi wa Facebook Ads",      dur:"12:30", views:"2.1K", desc:"Jinsi ya kuanza matangazo ya Facebook kwa biashara yako kutoka sifuri kabisa.", videoUrl:"" },
-  { id:2, tier:"silver", title:"Kuunda Picha ya Tangazo Bora",    dur:"08:45", views:"1.8K", desc:"Mbinu za kuunda picha za kuvutia kwa Canva na tools nyingine za bure.", videoUrl:"" },
-  { id:3, tier:"silver", title:"Target Audience — Chaguo Sahihi", dur:"10:15", views:"3.2K", desc:"Jifunza jinsi ya kuchagua hadhira sahihi kwa matangazo yako.", videoUrl:"" },
-  { id:4, tier:"green",  title:"Facebook Pixel Setup ya Pro",      dur:"25:10", views:"980",  desc:"Setup kamili ya Facebook Pixel kwa tracking ya juu ya mauzo yako.", videoUrl:"" },
-  { id:5, tier:"green",  title:"Retargeting Campaigns",            dur:"32:45", views:"756",  desc:"Jinsi ya kuwalenga tena watu waliokwisha tembelea tovuti au kurasa yako.", videoUrl:"" },
-  { id:6, tier:"green",  title:"Instagram Ads Mastery",            dur:"28:00", views:"1.1K", desc:"Mkakati kamili wa Instagram Ads unaofanya kazi Tanzania.", videoUrl:"" },
-  { id:7, tier:"gold",   title:"Google Ads Step by Step",          dur:"45:00", views:"870",  desc:"Guide kamili ya kuunda Google Search Ads kutoka mwanzo hadi matokeo ya kweli.", videoUrl:"" },
-  { id:8, tier:"gold",   title:"TikTok Ads Tanzania 2025",         dur:"38:20", views:"920",  desc:"Mkakati wa TikTok Ads unaofanya kazi kwa biashara za Tanzania 2025.", videoUrl:"" },
-  { id:9, tier:"gold",   title:"Email Marketing Automation",       dur:"28:15", views:"670",  desc:"Jenga mfumo wa email marketing unaouza ukiwa umelala.", videoUrl:"" },
-  { id:10,tier:"royal",  title:"Analytics & ROI Dashboard",        dur:"50:00", views:"340",  desc:"Pima matokeo ya matangazo yako na ufanye maamuzi ya kisayansi.", videoUrl:"" },
-  { id:11,tier:"royal",  title:"Corporate Ad Strategy Tanzania",   dur:"60:00", views:"210",  desc:"Mkakati kamili wa matangazo kwa makampuni makubwa Tanzania.", videoUrl:"" },
-];
-
-const DEFAULT_PACKAGES = [
-  { tier:"silver", price:"TSh 50,000",  period:"/mwezi", popular:false, image:"", desc:"Pakiti bora ya kuanza biashara yako mtandaoni kwa gharama nafuu.", features:["Facebook Ads x3/wiki","Picha 5/mwezi","Ripoti ya mwezi","WhatsApp Support","Masomo Level 1"] },
-  { tier:"green",  price:"TSh 120,000", period:"/mwezi", popular:true,  image:"", desc:"Pakiti maarufu kwa biashara zinazotaka kukua haraka na kufikia wateja wengi.", features:["FB + Instagram Ads","Picha 15 + Video 2","Ripoti ya wiki","Priority Support","Masomo Level 1 & 2"] },
-  { tier:"gold",   price:"TSh 300,000", period:"/mwezi", popular:false, image:"", desc:"Huduma ya premium yenye Account Manager wako mwenyewe na ripoti kila siku.", features:["Majukwaa Yote","Picha + Video Unlimited","Account Manager","Ripoti Kila Siku","Masomo Level 1–3"] },
-  { tier:"royal",  price:"TSh 800,000", period:"/mwezi", popular:false, image:"", desc:"Suluhisho kamili la kampuni kubwa na mfumo wa corporate dashboard.", features:["Kila kitu cha Gold","Corporate Dashboard","Team Training","WhatsApp Bot","Analytics","Masomo Yote"] },
-];
-
-const DEFAULT_STORE = {
-  tiers: DEFAULT_TIERS,
-  logo: null,
-  brandName: "SPONSORED ADS TANZANIA",
-  lessons: DEFAULT_LESSONS,
-  packages: DEFAULT_PACKAGES,
-  users: [
-    { id:1, name:"Amina Saleh",  phone:"+255711000001", tier:"silver", joinDate:"2025-01-10", active:true },
-    { id:2, name:"Hassan Juma",  phone:"+255711000002", tier:"green",  joinDate:"2025-01-12", active:true },
-    { id:3, name:"Grace Mollel", phone:"+255711000003", tier:"gold",   joinDate:"2025-01-15", active:true },
-    { id:4, name:"Peter Msigwa", phone:"+255711000004", tier:"silver", joinDate:"2025-01-18", active:false },
-  ],
-  otps: {},
-};
-
-function readStore() {
-  try { const r = localStorage.getItem("sat_store"); return r ? { ...DEFAULT_STORE, ...JSON.parse(r) } : DEFAULT_STORE; }
-  catch { return DEFAULT_STORE; }
-}
-function writeStore(s) { try { localStorage.setItem("sat_store", JSON.stringify(s)); } catch {} }
-
-function genCode() {
-  const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let s = "SAT-";
-  for (let i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)];
-  return s;
-}
-function waURL(phone, msg) { return `https://wa.me/${phone.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`; }
-
-// ── Countdown ─────────────────────────────────────────
-function Countdown({ expires }) {
-  const [rem, setRem] = useState(() => Math.max(0, Math.ceil((expires - Date.now()) / 1000)));
-  useEffect(() => {
-    const iv = setInterval(() => { const r = Math.max(0, Math.ceil((expires - Date.now()) / 1000)); setRem(r); if (r <= 0) clearInterval(iv); }, 300);
-    return () => clearInterval(iv);
-  }, [expires]);
-  const pct = (rem / 90) * 100;
-  const urgent = rem < 20;
-  return (
-    <div style={{ marginTop:"10px" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"5px" }}>
-        <span style={{ color:"rgba(255,255,255,0.5)", fontSize:"12px" }}>Muda uliobaki</span>
-        <span style={{ fontFamily:"monospace", fontWeight:900, fontSize:"16px", color: urgent ? "#f87171" : GOLD }}>{rem}s</span>
-      </div>
-      <div style={{ height:"6px", background:"rgba(255,255,255,0.1)", borderRadius:"10px", overflow:"hidden" }}>
-        <div style={{ height:"100%", width:`${pct}%`, borderRadius:"10px", transition:"width 0.3s", background: urgent ? "linear-gradient(90deg,#ef4444,#f97316)" : `linear-gradient(90deg,${GOLD},#f0c060)` }}/>
-      </div>
+<!-- LOGIN -->
+<div id="screen-login" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:#003366;">
+  <div style="width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid #C9A84C;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:20px;flex-shrink:0;">
+    <span id="lg-emoji" style="font-size:38px;">📡</span>
+    <img id="lg-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+  </div>
+  <h1 id="lg-title" style="color:#fff;font-weight:900;font-size:22px;text-align:center;margin-bottom:6px;">SPONSORED ADS TANZANIA</h1>
+  <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:36px;">Ingia ili uendelee</p>
+  <div style="width:100%;max-width:400px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:30px 22px;">
+    <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:9px;">NAMBA YA SIMU</label>
+    <div class="row" style="margin-bottom:20px;">
+      <div style="padding:16px 13px;background:rgba(255,255,255,0.15);border-radius:14px 0 0 14px;color:#fff;font-weight:800;font-size:16px;border:1.5px solid rgba(255,255,255,0.15);border-right:none;white-space:nowrap;">+255</div>
+      <input id="lg-phone" maxlength="9" placeholder="674 695 549" oninput="onPhone()" onkeydown="if(event.key==='Enter')doLogin()" class="inp" style="border-radius:0 14px 14px 0;border-left:none;font-size:16px;padding:16px 15px;"/>
     </div>
-  );
-}
-
-// ── User Card ─────────────────────────────────────────
-function UserCard({ user, otp, tiers, onGenerate, onTierChange, onToggleActive, onRevokeOTP }) {
-  const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const t = tiers[user.tier] || tiers.silver;
-  const hasOTP = otp && !otp.used && Date.now() < otp.expires;
-
-  function copyCode() {
-    navigator.clipboard?.writeText(otp.code).catch(()=>{});
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
-  }
-
-  return (
-    <div style={{ background:"#0d1b2e", border:`1.5px solid ${open ? t.color+"66" : "rgba(255,255,255,0.08)"}`, borderRadius:"20px", overflow:"hidden", marginBottom:"12px" }}>
-      <div onClick={() => setOpen(o => !o)} style={{ padding:"16px 18px", display:"flex", alignItems:"center", gap:"12px", cursor:"pointer" }}>
-        <div style={{ width:"46px", height:"46px", background:`linear-gradient(135deg,${BRAND},#005599)`, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, color:"#fff", fontSize:"19px", flexShrink:0, border:`2px solid ${t.color}44` }}>{user.name[0]}</div>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontWeight:800, fontSize:"15px" }}>{user.name}</div>
-          <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"13px", marginBottom:"4px" }}>{user.phone}</div>
-          <div style={{ display:"flex", gap:"6px", flexWrap:"wrap" }}>
-            <span style={{ background:`${t.color}18`, border:`1px solid ${t.color}44`, borderRadius:"20px", padding:"2px 9px", color:t.color, fontSize:"11px", fontWeight:700 }}>{t.icon} {t.sub}</span>
-            <span style={{ background: user.active ? "rgba(74,222,128,0.12)" : "rgba(239,68,68,0.12)", border:`1px solid ${user.active?"rgba(74,222,128,0.3)":"rgba(239,68,68,0.3)"}`, borderRadius:"20px", padding:"2px 9px", fontSize:"11px", fontWeight:700, color: user.active?"#4ade80":"#f87171" }}>
-              {user.active ? "● Aktive" : "● Imezuiwa"}
-            </span>
-            {hasOTP && <span style={{ background:`${GOLD}18`, border:`1px solid ${GOLD}44`, borderRadius:"20px", padding:"2px 9px", color:GOLD, fontSize:"11px", fontWeight:700 }}>🔑 OTP Hai</span>}
-          </div>
-        </div>
-        <span style={{ color:"rgba(255,255,255,0.3)", fontSize:"18px", transform: open?"rotate(180deg)":"rotate(0)", transition:"0.2s" }}>▾</span>
-      </div>
-
-      {open && (
-        <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", padding:"18px" }}>
-          {/* Tier */}
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1.5px", display:"block", marginBottom:"8px" }}>BADILISHA TIER</label>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px", marginBottom:"14px" }}>
-            {Object.values(tiers).map(tier => (
-              <button key={tier.id} onClick={() => onTierChange(user.id, tier.id)}
-                style={{ padding:"10px", borderRadius:"10px", border:`1.5px solid ${user.tier===tier.id?tier.color:"rgba(255,255,255,0.1)"}`, background:user.tier===tier.id?`${tier.color}20`:"transparent", color:user.tier===tier.id?tier.color:"rgba(255,255,255,0.5)", fontWeight:700, fontSize:"12px", cursor:"pointer", fontFamily:"inherit" }}>
-                {tier.icon} {tier.sub}
-              </button>
-            ))}
-          </div>
-
-          {/* OTP */}
-          {hasOTP && (
-            <div style={{ background:`${GOLD}12`, border:`1.5px solid ${GOLD}55`, borderRadius:"14px", padding:"14px", marginBottom:"12px" }}>
-              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", marginBottom:"8px" }}>✅ OTP INAYOENDELEA</div>
-              <div onClick={copyCode} style={{ textAlign:"center", padding:"12px", background:`${GOLD}22`, borderRadius:"10px", cursor:"pointer", marginBottom:"4px" }}>
-                <div style={{ fontFamily:"monospace", fontWeight:900, fontSize:"1.6rem", color:GOLD, letterSpacing:"4px" }}>{otp.code}</div>
-                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px", marginTop:"4px" }}>{copied ? "✅ Imenakiliwa!" : "👆 Gusa kunakili"}</div>
-              </div>
-              <Countdown expires={otp.expires} />
-              <button onClick={() => onRevokeOTP(user.id)} style={{ width:"100%", marginTop:"10px", padding:"8px", background:"rgba(239,68,68,0.15)", border:"1px solid rgba(239,68,68,0.3)", borderRadius:"8px", color:"#f87171", fontSize:"13px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>❌ Uque OTP</button>
-            </div>
-          )}
-
-          <button onClick={() => onGenerate(user)} style={{ width:"100%", padding:"13px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"12px", color:"#000", fontWeight:900, fontSize:"15px", cursor:"pointer", fontFamily:"inherit", marginBottom:"10px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
-            🔑 Generate &amp; Send OTP
-          </button>
-
-          <button onClick={() => onToggleActive(user.id)} style={{ width:"100%", padding:"11px", background: user.active?"rgba(239,68,68,0.12)":"rgba(74,222,128,0.12)", border:`1px solid ${user.active?"rgba(239,68,68,0.3)":"rgba(74,222,128,0.3)"}`, borderRadius:"10px", color:user.active?"#f87171":"#4ade80", fontWeight:700, fontSize:"13px", cursor:"pointer", fontFamily:"inherit" }}>
-            {user.active ? "🚫 Zuia Akaunti" : "✅ Fungua Akaunti"}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Add User Modal ────────────────────────────────────
-function AddUserModal({ tiers, onAdd, onClose }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [tier, setTier] = useState("silver");
-  const [err, setErr] = useState("");
-  const inp = { width:"100%", padding:"14px 15px", borderRadius:"12px", border:"1.5px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.07)", color:"#fff", fontSize:"15px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" };
-
-  function submit() {
-    if (!name.trim()) { setErr("Jaza jina"); return; }
-    if (phone.replace(/\D/g,"").length < 9) { setErr("Digits 9 za simu zinahitajika"); return; }
-    onAdd({ id:Date.now(), name:name.trim(), phone:"+255"+phone.replace(/\D/g,"").slice(0,9), tier, joinDate:new Date().toISOString().slice(0,10), active:true });
-    onClose();
-  }
-
-  return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.88)", zIndex:900, display:"flex", alignItems:"center", justifyContent:"center", padding:"20px" }}>
-      <div style={{ background:"#0d1b2e", border:`1px solid ${GOLD}44`, borderRadius:"24px", padding:"26px 22px", width:"100%", maxWidth:"400px" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"20px" }}>
-          <div style={{ fontWeight:900, fontSize:"20px" }}>➕ Ongeza Mtumiaji</div>
-          <button onClick={onClose} style={{ width:"32px", height:"32px", background:"rgba(255,255,255,0.08)", border:"none", borderRadius:"50%", color:"#aaa", cursor:"pointer", fontSize:"16px" }}>✕</button>
-        </div>
-        <div style={{ marginBottom:"13px" }}>
-          <label style={{ color:"rgba(255,255,255,0.5)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"7px" }}>JINA KAMILI</label>
-          <input style={inp} placeholder="mf. Amina Saleh" value={name} onChange={e => setName(e.target.value)} />
-        </div>
-        <div style={{ marginBottom:"13px" }}>
-          <label style={{ color:"rgba(255,255,255,0.5)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"7px" }}>NAMBA YA SIMU</label>
-          <div style={{ display:"flex" }}>
-            <div style={{ padding:"14px 12px", background:"rgba(255,255,255,0.12)", borderRadius:"12px 0 0 12px", color:"#fff", fontWeight:700, border:"1.5px solid rgba(255,255,255,0.12)", borderRight:"none" }}>+255</div>
-            <input style={{ ...inp, borderRadius:"0 12px 12px 0", borderLeft:"none", flex:1 }} placeholder="711 000 001" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g,"").slice(0,9))} />
-          </div>
-        </div>
-        <div style={{ marginBottom:"18px" }}>
-          <label style={{ color:"rgba(255,255,255,0.5)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"7px" }}>TIER</label>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"7px" }}>
-            {Object.values(tiers).map(t => (
-              <button key={t.id} onClick={() => setTier(t.id)} style={{ padding:"10px", borderRadius:"10px", border:`1.5px solid ${tier===t.id?t.color:"rgba(255,255,255,0.1)"}`, background:tier===t.id?`${t.color}20`:"transparent", color:tier===t.id?t.color:"rgba(255,255,255,0.5)", fontWeight:700, fontSize:"12px", cursor:"pointer", fontFamily:"inherit" }}>
-                {t.icon} {t.sub}
-              </button>
-            ))}
-          </div>
-        </div>
-        {err && <div style={{ color:"#f87171", fontSize:"13px", marginBottom:"12px" }}>⚠️ {err}</div>}
-        <button onClick={submit} style={{ width:"100%", padding:"14px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"12px", color:"#000", fontWeight:900, fontSize:"16px", cursor:"pointer", fontFamily:"inherit" }}>Ongeza ✓</button>
-      </div>
-    </div>
-  );
-}
-
-// ── Package Editor ────────────────────────────────────
-function NewPackageForm({ tiers, onSave, onCancel }) {
-  const firstTier = Object.keys(tiers)[0] || "silver";
-  const [pkg, setPkg] = useState({ tier:firstTier, price:"TSh ", period:"/mwezi", popular:false, image:"", desc:"", features:[] });
-  const [newFeature, setNewFeature] = useState("");
-  const [err, setErr] = useState("");
-  const t = tiers[pkg.tier] || DEFAULT_TIERS[pkg.tier] || DEFAULT_TIERS.silver;
-  const inp = { width:"100%", padding:"11px 13px", borderRadius:"10px", border:`1.5px solid ${t.color}33`, background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"14px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" };
-
-  function addFeature() {
-    if (!newFeature.trim()) return;
-    setPkg(p => ({ ...p, features:[...p.features, newFeature.trim()] }));
-    setNewFeature("");
-  }
-  function removeFeature(i) { setPkg(p => ({ ...p, features:p.features.filter((_,idx)=>idx!==i) })); }
-  function save() {
-    if (!pkg.price.trim()) { setErr("Jaza bei"); return; }
-    if (pkg.features.length === 0) { setErr("Ongeza huduma angalau moja"); return; }
-    onSave({ ...pkg, id: Date.now() });
-  }
-
-  return (
-    <div style={{ background:"#0d1b2e", border:`1.5px solid ${t.color}55`, borderRadius:"18px", padding:"18px", marginBottom:"16px" }}>
-      <div style={{ color:GOLD, fontSize:"13px", fontWeight:700, marginBottom:"14px" }}>✨ Package Mpya</div>
-      <div style={{ marginBottom:"10px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>TIER</label>
-        <select value={pkg.tier} onChange={e => setPkg(p=>({...p,tier:e.target.value}))} style={{ ...inp, appearance:"none" }}>
-          {Object.values(tiers).map(t => <option key={t.id} value={t.id}>{t.icon} {t.sub}</option>)}
-        </select>
-      </div>
-      <div style={{ marginBottom:"10px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>MAELEZO MAFUPI</label>
-        <textarea rows={2} style={{ ...inp, resize:"vertical" }} placeholder="Eleza package hii..." value={pkg.desc} onChange={e => setPkg(p=>({...p,desc:e.target.value}))}/>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px", marginBottom:"10px" }}>
-        <div>
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>BEI</label>
-          <input style={inp} placeholder="TSh 150,000" value={pkg.price} onChange={e => setPkg(p=>({...p,price:e.target.value}))}/>
-        </div>
-        <div>
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>KIPINDI</label>
-          <input style={inp} placeholder="/mwezi" value={pkg.period} onChange={e => setPkg(p=>({...p,period:e.target.value}))}/>
-        </div>
-      </div>
-      <div style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"12px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px" }}>MAARUFU ⭐</label>
-        <button onClick={() => setPkg(p=>({...p,popular:!p.popular}))}
-          style={{ padding:"6px 14px", background:pkg.popular?`${GOLD}22`:"rgba(255,255,255,0.06)", border:`1px solid ${pkg.popular?GOLD:"rgba(255,255,255,0.12)"}`, borderRadius:"20px", color:pkg.popular?GOLD:"rgba(255,255,255,0.4)", fontWeight:700, fontSize:"12px", cursor:"pointer", fontFamily:"inherit" }}>
-          {pkg.popular ? "✅ Ndio" : "Hapana"}
-        </button>
-      </div>
-      <div style={{ marginBottom:"12px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"7px" }}>HUDUMA ({pkg.features.length})</label>
-        {pkg.features.map((f,i) => (
-          <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"6px" }}>
-            <div style={{ flex:1, padding:"9px 12px", background:"rgba(255,255,255,0.05)", borderRadius:"8px", color:"rgba(255,255,255,0.8)", fontSize:"13px" }}>{f}</div>
-            <button onClick={() => removeFeature(i)} style={{ width:"30px", height:"30px", background:"rgba(239,68,68,0.15)", border:"none", borderRadius:"8px", color:"#f87171", cursor:"pointer", fontSize:"14px", flexShrink:0 }}>×</button>
-          </div>
-        ))}
-        <div style={{ display:"flex", gap:"8px", marginTop:"8px" }}>
-          <input style={{ ...inp, flex:1 }} placeholder="Ongeza huduma..." value={newFeature} onChange={e => setNewFeature(e.target.value)} onKeyDown={e => e.key==="Enter" && addFeature()}/>
-          <button onClick={addFeature} style={{ padding:"10px 14px", background:`${GOLD}22`, border:`1px solid ${GOLD}44`, borderRadius:"10px", color:GOLD, fontWeight:700, fontSize:"18px", cursor:"pointer", flexShrink:0 }}>+</button>
-        </div>
-      </div>
-      {err && <div style={{ color:"#f87171", fontSize:"13px", marginBottom:"10px" }}>⚠️ {err}</div>}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px" }}>
-        <button onClick={onCancel} style={{ padding:"12px", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"10px", color:"rgba(255,255,255,0.6)", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit" }}>Funga</button>
-        <button onClick={save} style={{ padding:"12px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"10px", color:"#000", fontWeight:900, fontSize:"14px", cursor:"pointer", fontFamily:"inherit" }}>✓ Hifadhi</button>
-      </div>
-    </div>
-  );
-}
-
-function PackageEditor({ tiers, packages, onAdd, onUpdate, onDelete }) {
-  const [editing, setEditing]   = useState(null);
-  const [showNew, setShowNew]   = useState(false);
-  const imgRefs = useRef({});
-
-  function handleImgUpload(key, e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const pkg = packages.find(p => (p.id||p.tier) === key);
-      onUpdate({ ...pkg, image: ev.target.result });
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function saveEdit(pkg) { onUpdate(pkg); setEditing(null); }
-
-  return (
-    <div>
-      <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"13px", marginBottom:"14px", lineHeight:1.5 }}>Hariri au ongeza packages. Mabadiliko yanaonekana kwa wateja mara moja.</div>
-
-      <button onClick={() => { setShowNew(true); setEditing(null); }}
-        style={{ width:"100%", padding:"13px", background:`linear-gradient(135deg,${BRAND},#005599)`, border:"1px dashed rgba(255,255,255,0.2)", borderRadius:"14px", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit", marginBottom:"14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
-        ➕ Ongeza Package Mpya
-      </button>
-
-      {showNew && <NewPackageForm tiers={tiers} onSave={p => { onAdd(p); setShowNew(false); }} onCancel={() => setShowNew(false)}/>}
-
-      {packages.map(pkg => {
-        const t = tiers[pkg.tier] || DEFAULT_TIERS[pkg.tier];
-        const key = pkg.id || pkg.tier;
-        const isEditing = editing && (editing.id||editing.tier) === key;
-        const isDefault = !pkg.id; // default 4 packages have no id
-        return (
-          <div key={key} style={{ background:"#0d1b2e", border:`1.5px solid ${t.color}44`, borderRadius:"20px", overflow:"hidden", marginBottom:"16px" }}>
-            {/* Image area */}
-            <div style={{ position:"relative", width:"100%", height:"130px", background:`linear-gradient(135deg,${t.color}22,${BRAND})`, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
-              {pkg.image
-                ? <img src={pkg.image} alt={t.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                : <div style={{ textAlign:"center" }}><div style={{ fontSize:"36px" }}>{t.icon}</div><div style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px", marginTop:"4px" }}>Bado hakuna picha</div></div>
-              }
-              <input ref={el => imgRefs.current[key]=el} type="file" accept="image/*" onChange={e => handleImgUpload(key, e)} style={{ display:"none" }}/>
-              <button onClick={() => imgRefs.current[key]?.click()}
-                style={{ position:"absolute", bottom:"10px", right:"10px", padding:"7px 13px", background:"rgba(0,0,0,0.7)", border:`1px solid ${t.color}55`, borderRadius:"20px", color:t.color, fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-                📤 {pkg.image ? "Badilisha" : "Weka Picha"}
-              </button>
-              {pkg.image && (
-                <button onClick={() => onUpdate({ ...pkg, image:"" })}
-                  style={{ position:"absolute", bottom:"10px", left:"10px", padding:"7px 10px", background:"rgba(239,68,68,0.8)", border:"none", borderRadius:"20px", color:"#fff", fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-                  🗑️
-                </button>
-              )}
-            </div>
-
-            {/* Info / Edit */}
-            <div style={{ padding:"16px" }}>
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"10px" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
-                  <span style={{ fontSize:"20px" }}>{t.icon}</span>
-                  <div>
-                    <div style={{ color:t.color, fontWeight:900, fontSize:"15px" }}>{t.name}</div>
-                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px" }}>Level {t.level}</div>
-                  </div>
-                </div>
-                <div style={{ display:"flex", gap:"6px" }}>
-                  <button onClick={() => setEditing(isEditing ? null : { ...pkg })}
-                    style={{ padding:"7px 12px", background:`${GOLD}18`, border:`1px solid ${GOLD}44`, borderRadius:"8px", color:GOLD, fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-                    {isEditing ? "✕" : "✏️"}
-                  </button>
-                  {!isDefault && (
-                    <button onClick={() => window.confirm("Futa package hii?") && onDelete(key)}
-                      style={{ padding:"7px 10px", background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)", borderRadius:"8px", color:"#f87171", fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>🗑️</button>
-                  )}
-                </div>
-              </div>
-
-              {!isEditing ? (
-                <div>
-                  <div style={{ color:"rgba(255,255,255,0.5)", fontSize:"13px", marginBottom:"6px", lineHeight:1.5 }}>{pkg.desc || <span style={{ color:"rgba(255,255,255,0.2)" }}>Hakuna maelezo</span>}</div>
-                  <div style={{ display:"flex", alignItems:"baseline", gap:"5px", marginBottom:"8px" }}>
-                    <span style={{ color:"#fff", fontWeight:900, fontSize:"20px" }}>{pkg.price}</span>
-                    <span style={{ color:"rgba(255,255,255,0.4)", fontSize:"13px" }}>{pkg.period}</span>
-                    {pkg.popular && <span style={{ background:GOLD, color:"#000", fontSize:"10px", fontWeight:900, padding:"2px 8px", borderRadius:"20px", marginLeft:"6px" }}>MAARUFU</span>}
-                  </div>
-                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px" }}>{pkg.features.length} huduma</div>
-                </div>
-              ) : (
-                <PackageEditForm pkg={editing} tiers={tiers} onSave={saveEdit} onChange={setEditing}/>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function PackageEditForm({ pkg, tiers, onSave, onChange }) {
-  const [newFeature, setNewFeature] = useState("");
-  const t = tiers[pkg.tier] || DEFAULT_TIERS[pkg.tier];
-  const inp = { width:"100%", padding:"11px 13px", borderRadius:"10px", border:`1.5px solid ${t.color}33`, background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"14px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" };
-
-  function addFeature() {
-    if (!newFeature.trim()) return;
-    onChange({ ...pkg, features:[...pkg.features, newFeature.trim()] });
-    setNewFeature("");
-  }
-  function removeFeature(i) { onChange({ ...pkg, features: pkg.features.filter((_,idx) => idx!==i) }); }
-
-  return (
-    <div>
-      <div style={{ marginBottom:"10px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>MAELEZO MAFUPI</label>
-        <textarea rows={2} style={{ ...inp, resize:"vertical" }} value={pkg.desc||""} onChange={e => onChange({ ...pkg, desc:e.target.value })}/>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px", marginBottom:"10px" }}>
-        <div>
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>BEI</label>
-          <input style={inp} value={pkg.price} onChange={e => onChange({ ...pkg, price:e.target.value })}/>
-        </div>
-        <div>
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"5px" }}>KIPINDI</label>
-          <input style={inp} value={pkg.period} onChange={e => onChange({ ...pkg, period:e.target.value })}/>
-        </div>
-      </div>
-      <div style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"12px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px" }}>MAARUFU ⭐</label>
-        <button onClick={() => onChange({ ...pkg, popular:!pkg.popular })}
-          style={{ padding:"6px 14px", background:pkg.popular?`${GOLD}22`:"rgba(255,255,255,0.06)", border:`1px solid ${pkg.popular?GOLD:"rgba(255,255,255,0.12)"}`, borderRadius:"20px", color:pkg.popular?GOLD:"rgba(255,255,255,0.4)", fontWeight:700, fontSize:"12px", cursor:"pointer", fontFamily:"inherit" }}>
-          {pkg.popular ? "✅ Ndio" : "Hapana"}
-        </button>
-      </div>
-      <div style={{ marginBottom:"12px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"7px" }}>HUDUMA ({pkg.features.length})</label>
-        {pkg.features.map((f,i) => (
-          <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"6px" }}>
-            <div style={{ flex:1, padding:"9px 12px", background:"rgba(255,255,255,0.05)", borderRadius:"8px", color:"rgba(255,255,255,0.8)", fontSize:"13px" }}>{f}</div>
-            <button onClick={() => removeFeature(i)} style={{ width:"30px", height:"30px", background:"rgba(239,68,68,0.15)", border:"none", borderRadius:"8px", color:"#f87171", cursor:"pointer", fontSize:"14px", flexShrink:0 }}>×</button>
-          </div>
-        ))}
-        <div style={{ display:"flex", gap:"8px", marginTop:"8px" }}>
-          <input style={{ ...inp, flex:1 }} placeholder="Ongeza huduma mpya..." value={newFeature} onChange={e => setNewFeature(e.target.value)} onKeyDown={e => e.key==="Enter" && addFeature()}/>
-          <button onClick={addFeature} style={{ padding:"10px 14px", background:`${GOLD}22`, border:`1px solid ${GOLD}44`, borderRadius:"10px", color:GOLD, fontWeight:700, fontSize:"18px", cursor:"pointer", flexShrink:0 }}>+</button>
-        </div>
-      </div>
-      <button onClick={() => onSave(pkg)} style={{ width:"100%", padding:"12px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"10px", color:"#000", fontWeight:900, fontSize:"14px", cursor:"pointer", fontFamily:"inherit" }}>✓ Hifadhi Package</button>
-    </div>
-  );
-}
-
-// ── Content Tab (Lesson Management) ──────────────────
-function LessonForm({ tiers, initial, onSave, onCancel }) {
-  const blank = { tier:"silver", title:"", desc:"", dur:"00:00", videoUrl:"" };
-  const [f, setF] = useState(initial || blank);
-  const [err, setErr] = useState("");
-  const inp = { width:"100%", padding:"12px 14px", borderRadius:"10px", border:"1.5px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"14px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" };
-  function save() {
-    if (!f.title.trim()) { setErr("Jaza kichwa cha somo"); return; }
-    if (!f.desc.trim())  { setErr("Jaza maelezo"); return; }
-    onSave(f);
-  }
-  const t = tiers[f.tier] || tiers.silver;
-  return (
-    <div style={{ background:"#0d1b2e", border:`1.5px solid ${t.color}44`, borderRadius:"18px", padding:"18px", marginBottom:"14px" }}>
-      <div style={{ marginBottom:"12px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>KICHWA CHA SOMO</label>
-        <input style={inp} placeholder="mf. Facebook Ads Mastery" value={f.title} onChange={e => setF(x=>({...x,title:e.target.value}))}/>
-      </div>
-      <div style={{ marginBottom:"12px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>MAELEZO</label>
-        <textarea rows={3} style={{ ...inp, resize:"vertical" }} placeholder="Maelezo mafupi ya somo..." value={f.desc} onChange={e => setF(x=>({...x,desc:e.target.value}))}/>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px", marginBottom:"12px" }}>
-        <div>
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>MUDA (mf. 12:30)</label>
-          <input style={inp} placeholder="12:30" value={f.dur} onChange={e => setF(x=>({...x,dur:e.target.value}))}/>
-        </div>
-        <div>
-          <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>TIER</label>
-          <select value={f.tier} onChange={e => setF(x=>({...x,tier:e.target.value}))}
-            style={{ ...inp, appearance:"none" }}>
-            {Object.values(tiers).map(t => <option key={t.id} value={t.id}>{t.icon} {t.sub}</option>)}
-          </select>
-        </div>
-      </div>
-      <div style={{ marginBottom:"14px" }}>
-        <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>🎬 VIDEO URL (YouTube au link ya moja kwa moja)</label>
-        <input style={inp} placeholder="https://youtube.com/watch?v=... au https://..." value={f.videoUrl||""} onChange={e => setF(x=>({...x,videoUrl:e.target.value}))}/>
-        <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px", marginTop:"5px" }}>Weka link ya YouTube au URL ya moja kwa moja ya video (.mp4)</div>
-      </div>
-      {err && <div style={{ color:"#f87171", fontSize:"13px", marginBottom:"10px" }}>⚠️ {err}</div>}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px" }}>
-        <button onClick={onCancel} style={{ padding:"12px", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"10px", color:"rgba(255,255,255,0.6)", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit" }}>Funga</button>
-        <button onClick={save} style={{ padding:"12px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"10px", color:"#000", fontWeight:900, fontSize:"14px", cursor:"pointer", fontFamily:"inherit" }}>✓ Hifadhi</button>
-      </div>
-    </div>
-  );
-}
-
-function ContentTab({ tiers, lessons, packages, onAdd, onUpdate, onDelete, onAddPackage, onUpdatePackage, onDeletePackage }) {
-  const [subTab, setSubTab]   = useState("lessons");
-  const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing]   = useState(null);
-
-  function handleSaveNew(f) { onAdd(f); setShowForm(false); }
-  function handleSaveEdit(f) { onUpdate(f); setEditing(null); }
-
-  return (
-    <div>
-      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>📹 SIMAMIA MAUDHUI</div>
-
-      {/* Sub-tabs */}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px", marginBottom:"20px" }}>
-        {[["lessons","📚 Masomo"],["packages","📦 Packages"]].map(([id,lb]) => (
-          <button key={id} onClick={() => setSubTab(id)}
-            style={{ padding:"11px", borderRadius:"12px", border:`1.5px solid ${subTab===id?GOLD+"88":"rgba(255,255,255,0.1)"}`, background:subTab===id?`${GOLD}18`:"transparent", color:subTab===id?GOLD:"rgba(255,255,255,0.5)", fontWeight:700, fontSize:"13px", cursor:"pointer", fontFamily:"inherit" }}>
-            {lb}
-          </button>
-        ))}
-      </div>
-
-      {subTab === "packages" && (
-        <PackageEditor tiers={tiers} packages={packages} onAdd={onAddPackage} onUpdate={onUpdatePackage} onDelete={onDeletePackage}/>
-      )}
-
-      {subTab === "lessons" && (
+    <!-- Returning user -->
+    <div id="ret-card" style="display:none;border-radius:16px;padding:16px;margin-bottom:20px;flex-direction:row;align-items:center;gap:14px;">
+      <div id="ret-av" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0;">A</div>
       <div>
-      <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"13px", marginBottom:"18px", lineHeight:1.5 }}>Ongeza, hariri au futa masomo. Wateja wataona mabadiliko mara moja.</div>
-
-      <button onClick={() => { setShowForm(true); setEditing(null); }}
-        style={{ width:"100%", padding:"13px", background:`linear-gradient(135deg,${BRAND},#005599)`, border:"1px dashed rgba(255,255,255,0.2)", borderRadius:"14px", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit", marginBottom:"14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
-        ➕ Ongeza Somo Jipya
-      </button>
-
-      {showForm && !editing && (
-        <LessonForm tiers={tiers} onSave={handleSaveNew} onCancel={() => setShowForm(false)}/>
-      )}
-
-      {lessons.length === 0 && (
-        <div style={{ textAlign:"center", padding:"44px 20px", color:"rgba(255,255,255,0.3)" }}>
-          <div style={{ fontSize:"40px", marginBottom:"12px" }}>🎬</div>
-          Hakuna masomo bado
-        </div>
-      )}
-
-      {Object.values(tiers).map(tier => {
-        const tl = lessons.filter(l => l.tier === tier.id);
-        if (!tl.length) return null;
-        return (
-          <div key={tier.id} style={{ marginBottom:"22px" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"10px" }}>
-              <span style={{ fontSize:"18px" }}>{tier.icon}</span>
-              <span style={{ color:tier.color, fontWeight:800, fontSize:"14px" }}>{tier.name}</span>
-              <span style={{ background:`${tier.color}18`, border:`1px solid ${tier.color}33`, borderRadius:"20px", padding:"2px 9px", color:tier.color, fontSize:"11px", fontWeight:700 }}>{tl.length} masomo</span>
-            </div>
-            {tl.map(l => (
-              editing?.id === l.id ? (
-                <LessonForm key={l.id} tiers={tiers} initial={editing} onSave={handleSaveEdit} onCancel={() => setEditing(null)}/>
-              ) : (
-                <div key={l.id} style={{ background:"#0d1b2e", border:`1.5px solid ${tier.color}22`, borderRadius:"16px", padding:"16px", marginBottom:"10px" }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:"10px", marginBottom:"8px" }}>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontWeight:700, fontSize:"14px", marginBottom:"3px" }}>{l.title}</div>
-                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px" }}>⏱ {l.dur}</div>
-                    </div>
-                    <div style={{ display:"flex", gap:"6px", flexShrink:0 }}>
-                      <button onClick={() => { setEditing(l); setShowForm(false); }}
-                        style={{ padding:"6px 12px", background:`${GOLD}18`, border:`1px solid ${GOLD}44`, borderRadius:"8px", color:GOLD, fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>✏️ Edit</button>
-                      <button onClick={() => window.confirm("Futa somo hili?") && onDelete(l.id)}
-                        style={{ padding:"6px 10px", background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)", borderRadius:"8px", color:"#f87171", fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>🗑️</button>
-                    </div>
-                  </div>
-                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px", marginBottom:"6px", lineHeight:1.5 }}>{l.desc}</div>
-                  {l.videoUrl
-                    ? <div style={{ color:"#4ade80", fontSize:"12px", fontWeight:700 }}>✅ Video imewekwa</div>
-                    : <div style={{ color:"#f87171", fontSize:"12px" }}>⚠️ Hakuna video — weka URL</div>
-                  }
-                </div>
-              )
-            ))}
-          </div>
-        );
-      })}
+        <div style="color:#4ade80;font-size:12px;font-weight:700;margin-bottom:2px;">✅ Umekumbukwa!</div>
+        <div id="ret-name" style="font-weight:900;font-size:16px;">-</div>
+        <div id="ret-badge" style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);border-radius:20px;padding:2px 9px;margin-top:4px;"><span id="ret-icon"></span><span id="ret-tier" style="font-size:11px;font-weight:700;"></span></div>
       </div>
-      )}
     </div>
-  );
+    <!-- New user -->
+    <div id="new-wrap" style="display:none;">
+      <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:11px 14px;margin-bottom:14px;">
+        <div style="color:#C9A84C;font-size:13px;font-weight:700;">👤 Karibu! Jisajili kwa mara ya kwanza</div>
+      </div>
+      <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:9px;">JINA LAKO KAMILI</label>
+      <input id="lg-name" placeholder="mf. Amina Saleh" onkeydown="if(event.key==='Enter')doLogin()" class="inp" style="font-size:16px;padding:16px 15px;margin-bottom:20px;"/>
+    </div>
+    <div id="lg-err" style="display:none;background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.4);border-radius:12px;padding:12px 15px;color:#fca5a5;font-size:14px;margin-bottom:16px;"></div>
+    <button id="lg-btn" onclick="doLogin()" class="gold-btn">Ingia Sasa →</button>
+    <p style="color:rgba(255,255,255,0.3);font-size:12px;text-align:center;margin-top:14px;">Msaada? <a id="lg-wa" href="#" target="_blank" style="color:#C9A84C;font-weight:700;">Piga WhatsApp</a></p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="screen-app" style="display:none;max-width:480px;margin:0 auto;position:relative;">
+
+  <!-- HEADER -->
+  <header style="position:sticky;top:0;z-index:100;padding:14px 18px;background:#003366;box-shadow:0 4px 20px rgba(0,0,0,0.5);">
+    <div class="rowb">
+      <div class="row" style="gap:10px;">
+        <div style="width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,0.12);border:1px solid rgba(201,168,76,0.33);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+          <span id="app-logo-emoji" style="font-size:22px;">📡</span>
+          <img id="app-logo-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;"/>
+        </div>
+        <div>
+          <div id="app-brand-1" style="font-weight:900;font-size:13px;line-height:1;">SPONSORED ADS</div>
+          <div id="app-brand-2" style="color:#C9A84C;font-size:9px;letter-spacing:2px;">TANZANIA</div>
+        </div>
+      </div>
+      <div class="row" style="gap:9px;">
+        <button onclick="showUnlock()" style="background:rgba(201,168,76,0.22);border:1px solid rgba(201,168,76,0.44);border-radius:20px;padding:6px 13px;color:#C9A84C;font-size:12px;font-weight:700;">🔑 Unlock</button>
+        <div style="text-align:right;">
+          <div id="app-uname" style="font-size:13px;font-weight:700;">-</div>
+          <div id="app-tier" style="font-size:11px;font-weight:700;color:#94a3b8;">🥈 Silver</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main style="padding-bottom:90px;">
+
+    <!-- HOME -->
+    <div id="tab-home">
+      <div style="margin:14px;background:linear-gradient(135deg,#003366,#005599);border-radius:22px;padding:20px 18px;">
+        <div style="color:#C9A84C;font-size:12px;font-weight:700;margin-bottom:5px;letter-spacing:2px;">KARIBU TENA 👋</div>
+        <div id="home-greet" style="font-weight:900;font-size:22px;margin-bottom:4px;">Habari!</div>
+        <div style="color:rgba(255,255,255,0.6);font-size:15px;margin-bottom:14px;">Anza kukua biashara yako leo.</div>
+        <div id="home-tier-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(148,163,184,0.22);border:1px solid rgba(148,163,184,0.35);border-radius:20px;padding:5px 13px;">
+          <span>🥈</span><span style="color:#94a3b8;font-size:13px;font-weight:700;">BASIC ADS</span>
+        </div>
+      </div>
+      <!-- Stats -->
+      <div class="grid3" style="padding:14px;margin:0;">
+        <div class="card" style="text-align:center;padding:16px 10px;">
+          <div style="font-weight:900;font-size:22px;color:#C9A84C;">500+</div>
+          <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;line-height:1.3;">Wateja Wetu</div>
+        </div>
+        <div class="card" style="text-align:center;padding:16px 10px;">
+          <div style="font-weight:900;font-size:22px;color:#C9A84C;">4</div>
+          <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;line-height:1.3;">Packages</div>
+        </div>
+        <div class="card" style="text-align:center;padding:16px 10px;">
+          <div style="font-weight:900;font-size:22px;color:#C9A84C;">24/7</div>
+          <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;line-height:1.3;">Support</div>
+        </div>
+      </div>
+      <!-- Banner -->
+      <div style="padding:0 14px 14px;">
+        <div class="sec-title">📢 MATANGAZO MAALUM</div>
+        <div style="border-radius:20px;overflow:hidden;position:relative;">
+          <div id="banner-bg" style="padding:32px 26px;min-height:145px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(135deg,#003366,#005599);">
+            <div style="color:#C9A84C;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:8px;">TANGAZO MAALUM</div>
+            <div id="banner-title" style="color:#fff;font-weight:900;font-size:21px;line-height:1.2;margin-bottom:7px;">Ongeza Mauzo Yako Leo</div>
+            <div id="banner-sub" style="color:rgba(255,255,255,0.6);font-size:14px;">Huduma za matangazo ya hali ya juu</div>
+          </div>
+          <div id="banner-dots" style="position:absolute;bottom:12px;right:14px;display:flex;gap:6px;"></div>
+        </div>
+      </div>
+      <!-- Testimonials -->
+      <div style="padding:0 14px;">
+        <div class="sec-title">⭐ USHAHIDI WA WATEJA</div>
+        <div id="test-list"></div>
+      </div>
+      <div style="height:18px;"></div>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="tab-catalog" style="display:none;padding:14px;">
+      <div style="margin-bottom:24px;">
+        <div style="color:#C9A84C;font-size:11px;letter-spacing:3px;font-weight:700;margin-bottom:8px;">✦ PACKAGES ZETU</div>
+        <h2 style="font-weight:900;font-size:26px;line-height:1.1;margin-bottom:9px;">Chagua Package Yako</h2>
+        <p style="color:rgba(255,255,255,0.5);font-size:15px;line-height:1.65;">Packages zote zinajumuisha ushauri wa bure wa wiki ya kwanza na support ya WhatsApp 24/7.</p>
+      </div>
+      <div id="catalog-list"></div>
+    </div>
+
+    <!-- LESSONS -->
+    <div id="tab-lessons" style="display:none;padding:14px;">
+      <div id="les-banner" style="border-radius:18px;padding:16px 18px;margin-bottom:22px;display:flex;align-items:center;gap:12px;background:rgba(148,163,184,0.12);border:1.5px solid rgba(148,163,184,0.35);">
+        <span id="ltb-icon" style="font-size:34px;">🥈</span>
+        <div style="flex:1;">
+          <div id="ltb-name" style="color:#94a3b8;font-weight:900;font-size:15px;">BASIC ADS</div>
+          <div id="ltb-level" style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:2px;">Unafikia masomo Level 1–1</div>
+        </div>
+        <button onclick="showUnlock()" style="background:#C9A84C;border:none;border-radius:10px;padding:9px 14px;color:#000;font-weight:900;font-size:13px;">🔑 Fungua</button>
+      </div>
+      <div id="lessons-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" style="display:none;padding:16px 16px 100px;">
+      <div class="card" style="margin-bottom:14px;">
+        <div class="sec-title">👤 WASIFU WANGU</div>
+        <div class="row" style="gap:14px;margin-bottom:20px;">
+          <div id="set-av" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;border:2px solid #94a3b8;flex-shrink:0;">A</div>
+          <div>
+            <div id="set-name-d" style="font-weight:800;font-size:18px;">-</div>
+            <div id="set-phone-d" style="color:rgba(255,255,255,0.4);font-size:14px;">-</div>
+            <div id="set-tier-badge" style="display:inline-flex;align-items:center;gap:5px;background:rgba(148,163,184,0.18);border:1px solid rgba(148,163,184,0.35);border-radius:20px;padding:3px 10px;margin-top:5px;">
+              <span id="set-t-icon">🥈</span><span id="set-t-name" style="color:#94a3b8;font-size:12px;font-weight:700;">BASIC ADS</span>
+            </div>
+          </div>
+        </div>
+        <label style="display:block;color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:7px;">BADILISHA JINA</label>
+        <input id="set-name-inp" class="inp" style="margin-bottom:14px;"/>
+        <button onclick="saveProfile()" id="save-btn" class="gold-btn" style="font-size:15px;padding:13px;">Hifadhi Mabadiliko</button>
+      </div>
+      <div id="set-pkg-card" class="card" style="margin-bottom:14px;">
+        <div class="sec-title">📦 PACKAGE YANGU</div>
+        <div class="row" style="gap:14px;margin-bottom:16px;">
+          <span id="set-pkg-icon" style="font-size:40px;">🥈</span>
+          <div>
+            <div id="set-pkg-name" style="color:#94a3b8;font-weight:900;font-size:18px;">BASIC ADS</div>
+            <div id="set-pkg-lvl" style="color:rgba(255,255,255,0.5);font-size:13px;">Level 1 Access</div>
+          </div>
+        </div>
+        <a id="set-upgrade" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25);border-radius:12px;text-decoration:none;color:#4ade80;font-weight:700;font-size:14px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#4ade80"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Omba Upgrade
+        </a>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="sec-title">ℹ️ KUHUSU APP</div>
+        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Jina la App</span><span id="set-app-name" style="font-weight:700;font-size:14px;">SAT</span></div>
+        <div class="rowb" style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Toleo la App</span><span style="font-weight:700;font-size:14px;">v2.0</span></div>
+        <div class="rowb" style="padding:12px 0;"><span style="color:rgba(255,255,255,0.5);font-size:14px;">Mawasiliano</span><span style="font-weight:700;font-size:14px;">+255674695549</span></div>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="sec-title">📞 MSAADA</div>
+        <a id="set-wa-support" href="#" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25);border-radius:12px;text-decoration:none;color:#4ade80;font-weight:700;font-size:15px;margin-bottom:10px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#4ade80"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Piga WhatsApp Support
+        </a>
+        <p style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;">Tunajibu 24/7 kupitia WhatsApp</p>
+      </div>
+      <button onclick="doLogout()" style="width:100%;padding:15px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:14px;color:#f87171;font-weight:900;font-size:16px;">🚪 Toka (Logout)</button>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#0a1628;border-top:1px solid rgba(255,255,255,0.08);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;z-index:100;">
+    <button onclick="setTab('home')"     data-tab="home"     style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">🏠</span><span id="nl-home"     style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Nyumbani</span></button>
+    <button onclick="setTab('catalog')" data-tab="catalog"  style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">📦</span><span id="nl-catalog"  style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Catalog</span></button>
+    <button onclick="setTab('lessons')" data-tab="lessons"  style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">🎓</span><span id="nl-lessons"  style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Masomo</span></button>
+    <button onclick="setTab('settings')" data-tab="settings" style="padding:12px 6px;border:none;border-top:3px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">⚙️</span><span id="nl-settings" style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);">Mipangilio</span></button>
+  </nav>
+
+  <!-- FLOATING WA -->
+  <a id="fab-wa" href="#" target="_blank" style="position:fixed;bottom:90px;right:14px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(37,211,102,0.55);text-decoration:none;z-index:200;">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+</div>
+
+<!-- UNLOCK MODAL -->
+<div id="modal-unlock" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.88);">
+  <div style="background:#0d1b2e;border:2px solid rgba(201,168,76,0.55);border-radius:24px;padding:30px 22px;width:100%;max-width:380px;">
+    <div id="unlock-ok" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:60px;margin-bottom:16px;">🎉</div>
+      <div style="font-weight:900;font-size:22px;color:#4ade80;margin-bottom:8px;">Umefunguliwa!</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:15px;">Sasa unaweza kufikia content yako.</div>
+    </div>
+    <div id="unlock-form">
+      <div style="text-align:center;margin-bottom:22px;">
+        <div style="font-size:52px;margin-bottom:12px;">🔑</div>
+        <div style="font-weight:900;font-size:22px;margin-bottom:8px;">Ingiza Namba Yako</div>
+        <div style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;">Omba namba kwa admin kupitia WhatsApp, kisha uiingize hapa.</div>
+      </div>
+      <input id="unlock-code" placeholder="mf. SAT-AB3CD4" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryUnlock()"
+        style="width:100%;padding:17px;background:rgba(255,255,255,0.07);border:2px solid rgba(201,168,76,0.55);border-radius:14px;color:#C9A84C;font-size:18px;font-weight:900;letter-spacing:4px;outline:none;font-family:monospace;text-align:center;margin-bottom:12px;"/>
+      <div id="unlock-err" style="display:none;color:#fca5a5;font-size:13px;margin-bottom:12px;text-align:center;line-height:1.5;"></div>
+      <button onclick="tryUnlock()" class="gold-btn" style="margin-bottom:10px;">Fungua 🔓</button>
+      <button onclick="hideUnlock()" style="width:100%;padding:13px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:16px;">Funga</button>
+      <div style="text-align:center;"><a id="unlock-wa" href="#" target="_blank" style="color:#C9A84C;font-size:13px;font-weight:700;text-decoration:none;">📲 Omba namba kwa admin →</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const OWA="255674695549";
+const DT={silver:{id:"silver",level:1,name:"BASIC ADS",sub:"Silver",color:"#94a3b8",icon:"🥈",border:"rgba(148,163,184,0.35)"},green:{id:"green",level:2,name:"BUSINESS GROWTH",sub:"Green",color:"#22c55e",icon:"🟢",border:"rgba(34,197,94,0.35)"},gold:{id:"gold",level:3,name:"PREMIUM MENTORSHIP",sub:"Gold",color:"#C9A84C",icon:"🥇",border:"rgba(201,168,76,0.4)"},royal:{id:"royal",level:4,name:"CORPORATE MANAGEMENT",sub:"Royal Blue",color:"#60a5fa",icon:"👑",border:"rgba(96,165,250,0.4)"}};
+const DPKG=[{tier:"silver",price:"TSh 50,000",period:"/mwezi",popular:false,image:"",desc:"Pakiti bora ya kuanza biashara yako mtandaoni kwa gharama nafuu.",features:["Facebook Ads x3/wiki","Picha 5/mwezi","Ripoti ya mwezi","WhatsApp Support","Masomo Level 1"]},{tier:"green",price:"TSh 120,000",period:"/mwezi",popular:true,image:"",desc:"Pakiti maarufu kwa biashara zinazotaka kukua haraka na kufikia wateja wengi.",features:["FB + Instagram Ads","Picha 15 + Video 2","Ripoti ya wiki","Priority Support","Masomo Level 1 & 2"]},{tier:"gold",price:"TSh 300,000",period:"/mwezi",popular:false,image:"",desc:"Huduma ya premium yenye Account Manager wako mwenyewe na ripoti kila siku.",features:["Majukwaa Yote","Picha + Video Unlimited","Account Manager","Ripoti Kila Siku","Masomo Level 1–3"]},{tier:"royal",price:"TSh 800,000",period:"/mwezi",popular:false,image:"",desc:"Suluhisho kamili la kampuni kubwa na mfumo wa corporate dashboard.",features:["Kila kitu cha Gold","Corporate Dashboard","Team Training","WhatsApp Bot","Analytics","Masomo Yote"]}];
+const DL=[{id:1,tier:"silver",title:"Utangulizi wa Facebook Ads",dur:"12:30",views:"2.1K",desc:"Jinsi ya kuanza matangazo ya Facebook kwa biashara yako kutoka sifuri kabisa.",videoUrl:""},{id:2,tier:"silver",title:"Kuunda Picha ya Tangazo Bora",dur:"08:45",views:"1.8K",desc:"Mbinu za kuunda picha za kuvutia kwa Canva na tools nyingine za bure.",videoUrl:""},{id:3,tier:"silver",title:"Target Audience — Chaguo Sahihi",dur:"10:15",views:"3.2K",desc:"Jifunza jinsi ya kuchagua hadhira sahihi kwa matangazo yako.",videoUrl:""},{id:4,tier:"green",title:"Facebook Pixel Setup ya Pro",dur:"25:10",views:"980",desc:"Setup kamili ya Facebook Pixel kwa tracking ya juu ya mauzo yako.",videoUrl:""},{id:5,tier:"green",title:"Retargeting Campaigns",dur:"32:45",views:"756",desc:"Jinsi ya kuwalenga tena watu waliokwisha tembelea tovuti au kurasa yako.",videoUrl:""},{id:6,tier:"green",title:"Instagram Ads Mastery",dur:"28:00",views:"1.1K",desc:"Mkakati kamili wa Instagram Ads unaofanya kazi Tanzania.",videoUrl:""},{id:7,tier:"gold",title:"Google Ads Step by Step",dur:"45:00",views:"870",desc:"Guide kamili ya kuunda Google Search Ads kutoka mwanzo hadi matokeo ya kweli.",videoUrl:""},{id:8,tier:"gold",title:"TikTok Ads Tanzania 2025",dur:"38:20",views:"920",desc:"Mkakati wa TikTok Ads unaofanya kazi kwa biashara za Tanzania 2025.",videoUrl:""},{id:9,tier:"gold",title:"Email Marketing Automation",dur:"28:15",views:"670",desc:"Jenga mfumo wa email marketing unaouza ukiwa umelala.",videoUrl:""},{id:10,tier:"royal",title:"Analytics & ROI Dashboard",dur:"50:00",views:"340",desc:"Pima matokeo ya matangazo yako na ufanye maamuzi ya kisayansi.",videoUrl:""},{id:11,tier:"royal",title:"Corporate Ad Strategy Tanzania",dur:"60:00",views:"210",desc:"Mkakati kamili wa matangazo kwa makampuni makubwa Tanzania.",videoUrl:""}];
+const TESTS=[{name:"Mama Pendo",city:"Dar es Salaam",text:"Mauzo yangu yameongezeka mara 3 baada ya kutumia huduma hii!",stars:5,e:"🛍️"},{name:"Bwana Khalid",city:"Mwanza",text:"Growth package imenisaidia kupata wateja 200+ kwa mwezi mmoja.",stars:5,e:"📈"},{name:"Grace Mollel",city:"Arusha",text:"Professional sana. Picha na video za hali ya juu kabisa!",stars:5,e:"🎬"},{name:"Hassan Juma",city:"Dodoma",text:"Thamani yake ni kubwa mno. Ninaipendekeza kwa kila mtu.",stars:5,e:"💪"},{name:"Amina Saleh",city:"Zanzibar",text:"Facebook Ads zao zimeleta wateja hata wa nje ya Tanzania!",stars:5,e:"🌍"},{name:"Peter Msigwa",city:"Morogoro",text:"Team yao inajibu haraka sana. Support bora kuliko wote.",stars:5,e:"🏆"}];
+const BANNERS=[{title:"Ongeza Mauzo Yako Leo",sub:"Huduma za matangazo ya hali ya juu",grad:"linear-gradient(135deg,#003366,#005599)"},{title:"Special Offer — 20% OFF",sub:"Kwa wateja wapya wa mwezi huu",grad:"linear-gradient(135deg,#7c2d12,#C9A84C)"},{title:"Afrika Mashariki & Zaidi",sub:"Wateja kutoka mataifa mengi",grad:"linear-gradient(135deg,#064e3b,#065f46)"}];
+
+function rS(){try{const r=localStorage.getItem("sat_store");return r?JSON.parse(r):null;}catch{return null;}}
+function wa(p,m){return"https://wa.me/"+p.replace(/\D/g,"")+"?text="+encodeURIComponent(m);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function tiers(){const s=rS();return s?.tiers||DT;}
+function pkgs(){const s=rS();return s?.packages||DPKG;}
+function lessons(){const s=rS();return s?.lessons||DL;}
+function ytId(url){const m=(url||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+
+let cUser=null,cTab="home",bannerIdx=0,bTimer=null,pTimer=null;
+
+// Splash
+window.onload=function(){
+  const s=rS();
+  if(s?.brandName)document.getElementById("sp-title").textContent="Karibu "+s.brandName;
+  if(s?.logo){document.getElementById("sp-emoji").style.display="none";const i=document.getElementById("sp-img");i.src=s.logo;i.style.display="block";}
+  const start=Date.now();
+  const iv=setInterval(()=>{
+    const p=Math.min(100,((Date.now()-start)/3000)*100);
+    document.getElementById("sp-bar").style.width=p+"%";
+    if(p>=100){clearInterval(iv);setTimeout(()=>{const sp=document.getElementById("splash");sp.style.opacity="0";setTimeout(()=>{sp.style.display="none";showLogin();},400);},200);}
+  },30);
+};
+
+function showLogin(){
+  const s=rS();
+  if(s?.logo){document.getElementById("lg-emoji").style.display="none";const i=document.getElementById("lg-img");i.src=s.logo;i.style.display="block";}
+  if(s?.brandName)document.getElementById("lg-title").textContent=s.brandName;
+  document.getElementById("lg-wa").href=wa(OWA,"Habari! Ninahitaji msaada wa kuingia.");
+  document.getElementById("screen-login").style.display="flex";
 }
 
-// ══════════════════════════════════════════════════════
-//  MAIN ADMIN
-// ══════════════════════════════════════════════════════
-export default function AdminApp() {
-  const [locked, setLocked] = useState(true);
-  const [pw, setPw] = useState("");
-  const [pwErr, setPwErr] = useState("");
-  const [store, setStore] = useState(readStore);
-  const [tab, setTab] = useState("users");
-  const [search, setSearch] = useState("");
-  const [filterTier, setFilterTier] = useState("all");
-  const [showAdd, setShowAdd] = useState(false);
-  const [, tick] = useState(0);
-  const logoRef = useRef();
+function onPhone(){
+  const phone=document.getElementById("lg-phone").value.replace(/\D/g,"").slice(0,9);
+  document.getElementById("lg-phone").value=phone;
+  document.getElementById("lg-err").style.display="none";
+  document.getElementById("ret-card").style.display="none";
+  document.getElementById("new-wrap").style.display="none";
+  if(phone.length===9){
+    const full="+255"+phone,s=rS(),ex=s?.users?.find(u=>u.phone===full),tr=tiers();
+    if(ex){
+      const t=tr[ex.tier]||DT.silver;
+      document.getElementById("ret-av").textContent=ex.name[0];
+      document.getElementById("ret-av").style.borderColor=t.color;
+      document.getElementById("ret-name").textContent=ex.name;
+      document.getElementById("ret-icon").textContent=t.icon;
+      document.getElementById("ret-tier").textContent=t.name;
+      document.getElementById("ret-tier").style.color=t.color;
+      const rc=document.getElementById("ret-card");
+      rc.style.display="flex";rc.style.background=t.color+"12";rc.style.borderColor=t.color+"44";
+      document.getElementById("lg-btn").textContent="Ingia — "+ex.name.split(" ")[0]+" →";
+    } else {
+      document.getElementById("new-wrap").style.display="block";
+      document.getElementById("lg-btn").textContent="Ingia Sasa →";
+    }
+  } else {document.getElementById("lg-btn").textContent="Ingia Sasa →";}
+}
 
-  useEffect(() => { writeStore(store); }, [store]);
-  useEffect(() => { const t = setInterval(() => tick(x => x+1), 1000); return () => clearInterval(t); }, []);
-
-  const S = store;
-  const tiers = S.tiers || DEFAULT_TIERS;
-
-  // ── Actions ──────────────────────────────────────────
-  function generateOTP(user) {
-    const code = genCode();
-    const expires = Date.now() + 90000;
-    const msg = `Habari ${user.name}, kodi yako ya Premium ni *${code}*. Inatumika kwa sekunde 90 tu. 🔐\n_Sponsored Ads Tanzania_`;
-    setStore(s => ({ ...s, otps: { ...s.otps, [user.id]: { code, expires, used:false } } }));
-    window.open(waURL(user.phone, msg), "_blank");
+function doLogin(){
+  const phone=document.getElementById("lg-phone").value.replace(/\D/g,"").slice(0,9);
+  const err=document.getElementById("lg-err");
+  if(phone.length<9){err.textContent="⚠️ Digits 9 za simu zinahitajika";err.style.display="block";return;}
+  const full="+255"+phone,s=rS(),ex=s?.users?.find(u=>u.phone===full);
+  if(ex){cUser={...ex,isKnown:true};}
+  else{
+    const name=document.getElementById("lg-name").value.trim();
+    if(!name){err.textContent="⚠️ Tafadhali jaza jina lako kamili";err.style.display="block";return;}
+    cUser={id:Date.now(),name,phone:full,tier:"silver",active:true,isKnown:false};
   }
-  function changeTier(uid, tier) { setStore(s => ({ ...s, users: s.users.map(u => u.id===uid ? {...u,tier} : u) })); }
-  function toggleActive(uid) { setStore(s => ({ ...s, users: s.users.map(u => u.id===uid ? {...u,active:!u.active} : u) })); }
-  function revokeOTP(uid) { setStore(s => ({ ...s, otps: { ...s.otps, [uid]: {...s.otps[uid], used:true} } })); }
-  function addUser(u) { setStore(s => ({ ...s, users: [...s.users, u] })); }
+  document.getElementById("screen-login").style.display="none";
+  initApp();
+}
 
-  function addLesson(l)      { setStore(s => ({ ...s, lessons:  [...(s.lessons||[]), { ...l, id:Date.now() }] })); }
-  function updateLesson(l)   { setStore(s => ({ ...s, lessons:  (s.lessons||[]).map(x => x.id===l.id ? l : x) })); }
-  function deleteLesson(id)  { setStore(s => ({ ...s, lessons:  (s.lessons||[]).filter(x => x.id!==id) })); }
-  function addPackage(p)     { setStore(s => ({ ...s, packages: [...(s.packages||DEFAULT_PACKAGES), p] })); }
-  function updatePackage(p)  { setStore(s => ({ ...s, packages: (s.packages||DEFAULT_PACKAGES).map(x => (x.id||x.tier)===(p.id||p.tier) ? p : x) })); }
-  function deletePackage(key){ setStore(s => ({ ...s, packages: (s.packages||DEFAULT_PACKAGES).filter(x => (x.id||x.tier)!==key) })); }
+function initApp(){
+  const s=rS(),fresh=s?.users?.find(u=>u.id===cUser?.id);
+  if(fresh)cUser={...fresh,isKnown:true};
+  updateHdr();
+  document.getElementById("screen-app").style.display="block";
+  document.getElementById("fab-wa").href=wa(OWA,"Habari! Mimi ni "+cUser.name+" ("+cUser.phone+"). Ninahitaji msaada.");
+  document.getElementById("unlock-wa").href=wa(OWA,"Habari! Ninahitaji namba ya kufungua premium content yangu.");
+  setTab("home");
+  startBanner();
+  pTimer=setInterval(()=>{
+    const s=rS();if(!s||!cUser)return;
+    const up=s.users?.find(u=>u.id===cUser.id);
+    if(up&&up.tier!==cUser.tier){cUser={...cUser,tier:up.tier};updateHdr();if(cTab==="lessons")renderLessons();if(cTab==="home")renderHomeTier();}
+  },3000);
+}
 
-  function handleLogoUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => setStore(s => ({ ...s, logo: ev.target.result }));
-    reader.readAsDataURL(file);
-  }
+function updateHdr(){
+  const s=rS(),tr=tiers(),ct=tr[cUser.tier]||DT.silver,bn=s?.brandName||"SPONSORED ADS TANZANIA";
+  const parts=bn.split(" ");
+  document.getElementById("app-brand-1").textContent=parts.slice(0,2).join(" ");
+  document.getElementById("app-brand-2").textContent=parts.slice(2).join(" ")||"TANZANIA";
+  document.getElementById("app-uname").textContent=cUser.name.split(" ")[0];
+  document.getElementById("app-tier").textContent=ct.icon+" "+ct.sub;
+  document.getElementById("app-tier").style.color=ct.color;
+  if(s?.logo){document.getElementById("app-logo-emoji").style.display="none";const i=document.getElementById("app-logo-img");i.src=s.logo;i.style.display="block";}
+}
 
-  function updateTierName(id, field, value) {
-    setStore(s => ({ ...s, tiers: { ...s.tiers, [id]: { ...s.tiers[id], [field]: value } } }));
-  }
+function doLogout(){
+  clearInterval(pTimer);clearInterval(bTimer);cUser=null;
+  document.getElementById("screen-app").style.display="none";
+  document.getElementById("lg-phone").value="";document.getElementById("lg-name").value="";
+  document.getElementById("ret-card").style.display="none";document.getElementById("new-wrap").style.display="none";
+  document.getElementById("lg-btn").textContent="Ingia Sasa →";
+  showLogin();
+}
 
-  // ── Login gate ────────────────────────────────────────
-  if (locked) {
-    return (
-      <div style={{ minHeight:"100vh", background:BRAND, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"24px", fontFamily:"system-ui,sans-serif" }}>
-        <div style={{ width:"80px", height:"80px", background:"rgba(255,255,255,0.1)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", border:`2px solid ${GOLD}`, marginBottom:"22px" }}>
-          <span style={{ fontSize:"36px" }}>🔐</span>
-        </div>
-        <h1 style={{ color:"#fff", fontWeight:900, fontSize:"20px", textAlign:"center", marginBottom:"6px" }}>ADMIN PANEL</h1>
-        <p style={{ color:"rgba(255,255,255,0.5)", fontSize:"14px", marginBottom:"36px" }}>Sponsored Ads Tanzania</p>
-        <div style={{ width:"100%", maxWidth:"360px" }}>
-          <input type="password" value={pw} onChange={e => { setPw(e.target.value); setPwErr(""); }}
-            placeholder="Ingiza admin password"
-            onKeyDown={e => e.key==="Enter" && (pw==="ADMIN2025" ? setLocked(false) : setPwErr("Password si sahihi"))}
-            style={{ width:"100%", padding:"16px", borderRadius:"14px", border:`2px solid ${GOLD}44`, background:"rgba(255,255,255,0.08)", color:"#fff", fontSize:"16px", outline:"none", fontFamily:"inherit", boxSizing:"border-box", marginBottom:"12px" }} />
-          {pwErr && <div style={{ color:"#f87171", fontSize:"13px", marginBottom:"12px" }}>⚠️ {pwErr}</div>}
-          <button onClick={() => pw==="ADMIN2025" ? setLocked(false) : setPwErr("Password si sahihi")}
-            style={{ width:"100%", padding:"16px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"14px", color:"#000", fontWeight:900, fontSize:"17px", cursor:"pointer", fontFamily:"inherit" }}>
-            Ingia Admin →
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const totalUsers  = S.users.length;
-  const activeUsers = S.users.filter(u => u.active).length;
-  const activeOTPs  = Object.values(S.otps).filter(o => !o.used && Date.now() < o.expires).length;
-  const tierCounts  = Object.keys(tiers).reduce((a,k) => { a[k]=S.users.filter(u=>u.tier===k).length; return a; }, {});
-  const filtered    = S.users.filter(u => {
-    const ms = u.name.toLowerCase().includes(search.toLowerCase()) || u.phone.includes(search);
-    const mt = filterTier==="all" || u.tier===filterTier;
-    return ms && mt;
+function setTab(tab){
+  cTab=tab;
+  ["home","catalog","lessons","settings"].forEach(t=>{document.getElementById("tab-"+t).style.display=t===tab?"block":"none";});
+  ["home","catalog","lessons","settings"].forEach(t=>{
+    const b=document.querySelector('[data-tab="'+t+'"]'),l=document.getElementById("nl-"+t);
+    if(b)b.style.borderTopColor=t===tab?"#C9A84C":"transparent";
+    if(l)l.style.color=t===tab?"#C9A84C":"rgba(255,255,255,0.35)";
   });
-
-  return (
-    <div style={{ background:"#050f1a", minHeight:"100vh", color:"#f0f0f0", fontFamily:"system-ui,sans-serif", maxWidth:"520px", margin:"0 auto" }}>
-      {showAdd && <AddUserModal tiers={tiers} onAdd={addUser} onClose={() => setShowAdd(false)} />}
-
-      {/* HEADER */}
-      <div style={{ background:`linear-gradient(135deg,${BRAND},#001a33)`, padding:"18px 20px 0" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"18px" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:"12px" }}>
-            {S.logo
-              ? <img src={S.logo} alt="logo" style={{ width:"46px", height:"46px", borderRadius:"12px", objectFit:"cover", border:`1px solid ${GOLD}44` }}/>
-              : <div style={{ width:"46px", height:"46px", background:"rgba(255,255,255,0.12)", borderRadius:"12px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"24px" }}>📡</div>
-            }
-            <div>
-              <div style={{ color:GOLD, fontSize:"10px", letterSpacing:"3px", fontWeight:700 }}>ADMIN PANEL</div>
-              <div style={{ color:"#fff", fontWeight:900, fontSize:"16px" }}>{S.brandName || "Sponsored Ads TZ"}</div>
-            </div>
-          </div>
-          <button onClick={() => setLocked(true)} style={{ background:"rgba(239,68,68,0.15)", border:"1px solid rgba(239,68,68,0.3)", borderRadius:"10px", padding:"8px 14px", color:"#f87171", fontSize:"13px", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>🔒 Toka</button>
-        </div>
-        <div style={{ display:"flex", gap:"2px" }}>
-          {[["users","👥","Watumiaji"],["stats","📊","Takwimu"],["tiers","🏷️","Tiers"],["content","📹","Masomo"],["settings","⚙️","Mipangilio"]].map(([id,ic,lb]) => (
-            <button key={id} onClick={() => setTab(id)} style={{ flex:1, padding:"11px 6px", border:"none", background:"transparent", cursor:"pointer", fontFamily:"inherit", fontSize:"12px", fontWeight:700, color:tab===id?GOLD:"rgba(255,255,255,0.4)", borderBottom:`3px solid ${tab===id?GOLD:"transparent"}`, display:"flex", flexDirection:"column", alignItems:"center", gap:"2px" }}>
-              <span style={{ fontSize:"17px" }}>{ic}</span>{lb}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ padding:"18px 16px 100px" }}>
-
-        {/* ════ USERS ════ */}
-        {tab==="users" && (
-          <div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"10px", marginBottom:"18px" }}>
-              {[["👥",totalUsers,"Wote"],["✅",activeUsers,"Aktive"],["⏱",activeOTPs,"OTP Hai"]].map(([ic,n,l]) => (
-                <div key={l} style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"14px", padding:"14px 10px", textAlign:"center" }}>
-                  <div style={{ fontSize:"18px", marginBottom:"4px" }}>{ic}</div>
-                  <div style={{ fontWeight:900, fontSize:"22px", color:GOLD }}>{n}</div>
-                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", marginTop:"3px" }}>{l}</div>
-                </div>
-              ))}
-            </div>
-
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Tafuta jina au namba..."
-              style={{ width:"100%", padding:"13px 15px", borderRadius:"12px", border:"1.5px solid rgba(255,255,255,0.1)", background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"15px", outline:"none", fontFamily:"inherit", boxSizing:"border-box", marginBottom:"10px" }}/>
-
-            <div style={{ display:"flex", gap:"7px", flexWrap:"wrap", marginBottom:"14px" }}>
-              {[["all","Wote"],...Object.entries(tiers).map(([k,v])=>[k,v.sub])].map(([k,lb]) => (
-                <button key={k} onClick={() => setFilterTier(k)} style={{ padding:"7px 14px", borderRadius:"20px", border:"none", fontSize:"12px", fontWeight:700, cursor:"pointer", fontFamily:"inherit", background:filterTier===k?`linear-gradient(135deg,${GOLD},#f0c060)`:"rgba(255,255,255,0.07)", color:filterTier===k?"#000":"rgba(255,255,255,0.6)" }}>
-                  {lb}{k!=="all"?` (${tierCounts[k]||0})`:""}
-                </button>
-              ))}
-            </div>
-
-            <button onClick={() => setShowAdd(true)} style={{ width:"100%", padding:"13px", background:`linear-gradient(135deg,${BRAND},#005599)`, border:"1px dashed rgba(255,255,255,0.2)", borderRadius:"14px", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit", marginBottom:"14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
-              ➕ Ongeza Mtumiaji Mpya
-            </button>
-
-            {filtered.length === 0
-              ? <div style={{ textAlign:"center", padding:"44px 20px", color:"rgba(255,255,255,0.3)" }}><div style={{ fontSize:"40px", marginBottom:"12px" }}>👤</div>Hakuna mtumiaji</div>
-              : filtered.map(u => <UserCard key={u.id} user={u} otp={S.otps[u.id]} tiers={tiers} onGenerate={generateOTP} onTierChange={changeTier} onToggleActive={toggleActive} onRevokeOTP={revokeOTP}/>)
-            }
-          </div>
-        )}
-
-        {/* ════ STATS ════ */}
-        {tab==="stats" && (
-          <div>
-            <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>📊 MUHTASARI WA TIERS</div>
-            {Object.values(tiers).map(t => {
-              const count = tierCounts[t.id] || 0;
-              const pct = totalUsers > 0 ? Math.round((count/totalUsers)*100) : 0;
-              return (
-                <div key={t.id} style={{ background:"#0d1b2e", border:`1px solid ${t.color}33`, borderRadius:"16px", padding:"18px", marginBottom:"10px" }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
-                      <span style={{ fontSize:"22px" }}>{t.icon}</span>
-                      <div>
-                        <div style={{ fontWeight:700, fontSize:"14px" }}>{t.name}</div>
-                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px" }}>Level {t.level}</div>
-                      </div>
-                    </div>
-                    <div style={{ textAlign:"right" }}><div style={{ fontWeight:900, fontSize:"26px", color:t.color }}>{count}</div><div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px" }}>watumiaji</div></div>
-                  </div>
-                  <div style={{ height:"8px", background:"rgba(255,255,255,0.07)", borderRadius:"10px", overflow:"hidden" }}>
-                    <div style={{ height:"100%", width:`${pct}%`, background:`linear-gradient(90deg,${t.color},${t.color}88)`, borderRadius:"10px" }}/>
-                  </div>
-                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"12px", marginTop:"5px", textAlign:"right" }}>{pct}%</div>
-                </div>
-              );
-            })}
-
-            <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"16px", padding:"18px", marginTop:"8px" }}>
-              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"12px" }}>🔑 OTP ZA HIVI KARIBUNI</div>
-              {Object.entries(S.otps).length === 0
-                ? <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"14px", textAlign:"center", padding:"20px" }}>Hakuna OTP zilizotolewa bado</div>
-                : Object.entries(S.otps).map(([uid,otp]) => {
-                    const u = S.users.find(x => x.id===+uid);
-                    if (!u) return null;
-                    const exp = otp.used || Date.now()>otp.expires;
-                    return (
-                      <div key={uid} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"11px 0", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-                        <div><div style={{ fontWeight:600, fontSize:"14px" }}>{u.name}</div><div style={{ fontFamily:"monospace", color:exp?"#555":GOLD, fontSize:"14px", fontWeight:700 }}>{otp.code}</div></div>
-                        <span style={{ padding:"4px 12px", borderRadius:"20px", fontSize:"11px", fontWeight:700, background:exp?"rgba(80,80,80,0.2)":`${GOLD}18`, color:exp?"#666":GOLD }}>{exp?(otp.used?"Imetumika":"Imekwisha"):"Hai"}</span>
-                      </div>
-                    );
-                  })
-              }
-            </div>
-          </div>
-        )}
-
-        {/* ════ TIERS — Editable ════ */}
-        {tab==="tiers" && (
-          <div>
-            <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"6px" }}>🏷️ HARIRI MAJINA YA TIERS</div>
-            <div style={{ color:"rgba(255,255,255,0.3)", fontSize:"13px", marginBottom:"18px", lineHeight:1.5 }}>Badilisha majina, sub-titles na icons za tiers zako. Mabadiliko yataonekana kwa wateja mara moja.</div>
-            {Object.values(tiers).map(t => (
-              <div key={t.id} style={{ background:"#0d1b2e", border:`1.5px solid ${t.color}44`, borderRadius:"18px", padding:"18px", marginBottom:"14px" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"14px" }}>
-                  <span style={{ fontSize:"26px" }}>{t.icon}</span>
-                  <div style={{ flex:1 }}>
-                    <div style={{ color:t.color, fontWeight:900, fontSize:"15px" }}>Level {t.level}</div>
-                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"12px" }}>Tier ID: {t.id}</div>
-                  </div>
-                </div>
-                <div style={{ marginBottom:"10px" }}>
-                  <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>JINA KAMILI (CAPS)</label>
-                  <input value={t.name} onChange={e => updateTierName(t.id,"name",e.target.value)}
-                    style={{ width:"100%", padding:"12px 14px", borderRadius:"10px", border:`1.5px solid ${t.color}44`, background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"14px", fontWeight:700, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
-                </div>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px" }}>
-                  <div>
-                    <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>SUB-TITLE (kifupi)</label>
-                    <input value={t.sub} onChange={e => updateTierName(t.id,"sub",e.target.value)}
-                      style={{ width:"100%", padding:"12px 14px", borderRadius:"10px", border:`1.5px solid ${t.color}44`, background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"14px", outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
-                  </div>
-                  <div>
-                    <label style={{ color:"rgba(255,255,255,0.45)", fontSize:"11px", fontWeight:700, letterSpacing:"1px", display:"block", marginBottom:"6px" }}>ICON / EMOJI</label>
-                    <input value={t.icon} onChange={e => updateTierName(t.id,"icon",e.target.value)}
-                      style={{ width:"100%", padding:"12px 14px", borderRadius:"10px", border:`1.5px solid ${t.color}44`, background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"20px", outline:"none", fontFamily:"inherit", textAlign:"center", boxSizing:"border-box" }}/>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <div style={{ background:"rgba(74,222,128,0.08)", border:"1px solid rgba(74,222,128,0.2)", borderRadius:"12px", padding:"12px 16px", marginTop:"4px" }}>
-              <div style={{ color:"#4ade80", fontSize:"13px" }}>✅ Mabadiliko yanahifadhiwa kiotomatiki — wateja wataona mara moja</div>
-            </div>
-          </div>
-        )}
-
-        {/* ════ CONTENT — Masomo ════ */}
-        {tab==="content" && (
-          <ContentTab tiers={tiers} lessons={S.lessons||DEFAULT_LESSONS} packages={S.packages||DEFAULT_PACKAGES} onAdd={addLesson} onUpdate={updateLesson} onDelete={deleteLesson} onAddPackage={addPackage} onUpdatePackage={updatePackage} onDeletePackage={deletePackage}/>
-        )}
-
-        {/* ════ SETTINGS ════ */}
-        {tab==="settings" && (
-          <div>
-            {/* Logo Upload */}
-            <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"20px", marginBottom:"14px" }}>
-              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"16px" }}>🖼️ LOGO YA APP</div>
-              <div style={{ display:"flex", alignItems:"center", gap:"16px", marginBottom:"16px" }}>
-                <div style={{ width:"70px", height:"70px", background:"rgba(255,255,255,0.08)", borderRadius:"16px", display:"flex", alignItems:"center", justifyContent:"center", border:`2px dashed ${GOLD}44`, overflow:"hidden", flexShrink:0 }}>
-                  {S.logo
-                    ? <img src={S.logo} alt="logo" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                    : <span style={{ fontSize:"28px" }}>📡</span>
-                  }
-                </div>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:"15px", marginBottom:"4px" }}>Logo ya Sasa</div>
-                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"13px" }}>{S.logo ? "Logo imewekwa ✅" : "Bado hujaweka logo"}</div>
-                </div>
-              </div>
-              <input ref={logoRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display:"none" }}/>
-              <button onClick={() => logoRef.current?.click()} style={{ width:"100%", padding:"13px", background:`linear-gradient(135deg,${GOLD},#f0c060)`, border:"none", borderRadius:"12px", color:"#000", fontWeight:900, fontSize:"15px", cursor:"pointer", fontFamily:"inherit", marginBottom:"8px" }}>
-                📤 Upload Logo Mpya
-              </button>
-              {S.logo && <button onClick={() => setStore(s => ({...s, logo:null}))} style={{ width:"100%", padding:"11px", background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)", borderRadius:"10px", color:"#f87171", fontWeight:700, fontSize:"13px", cursor:"pointer", fontFamily:"inherit" }}>🗑️ Futa Logo</button>}
-            </div>
-
-            {/* Brand name */}
-            <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"20px", marginBottom:"14px" }}>
-              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>✏️ JINA LA BRAND</div>
-              <input value={S.brandName || ""} onChange={e => setStore(s => ({...s, brandName:e.target.value}))}
-                style={{ width:"100%", padding:"13px 15px", borderRadius:"12px", border:`1.5px solid ${GOLD}44`, background:"rgba(255,255,255,0.06)", color:"#fff", fontSize:"15px", fontWeight:700, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
-            </div>
-
-            {/* App info */}
-            <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"20px", marginBottom:"14px" }}>
-              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>⚙️ TAARIFA ZA APP</div>
-              {[["Namba ya Owner",OWNER_WA],["OTP Duration","Sekunde 90"],["App Version","v2.0"],["Watumiaji Wote",String(totalUsers)]].map(([k,v]) => (
-                <div key={k} style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ color:"rgba(255,255,255,0.5)", fontSize:"14px" }}>{k}</span>
-                  <span style={{ color:"#fff", fontWeight:700, fontSize:"14px" }}>{v}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div style={{ background:"#0d1b2e", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"20px", padding:"20px" }}>
-              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:"11px", letterSpacing:"2px", fontWeight:700, marginBottom:"14px" }}>🛠️ VITENDO</div>
-              <button onClick={() => { if(window.confirm("Futa OTP zote?")) setStore(s => ({...s,otps:{}})); }}
-                style={{ width:"100%", padding:"12px", background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)", borderRadius:"11px", color:"#f87171", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit", marginBottom:"10px" }}>
-                🗑️ Futa OTP Zote
-              </button>
-              <button onClick={() => { const b = new Blob([JSON.stringify(S,null,2)],{type:"application/json"}); const a = document.createElement("a"); a.href=URL.createObjectURL(b); a.download="sat_backup.json"; a.click(); }}
-                style={{ width:"100%", padding:"12px", background:"rgba(96,165,250,0.12)", border:"1px solid rgba(96,165,250,0.25)", borderRadius:"11px", color:"#60a5fa", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"inherit", marginBottom:"10px" }}>
-                📥 Download Backup
-              </button>
-              <a href={waURL(OWNER_WA,"Habari! Test ya WhatsApp link.")} target="_blank" rel="noopener noreferrer"
-                style={{ display:"flex", alignItems:"center", gap:"10px", padding:"12px 15px", background:"rgba(37,211,102,0.1)", border:"1px solid rgba(37,211,102,0.25)", borderRadius:"11px", textDecoration:"none", color:"#4ade80", fontWeight:700, fontSize:"14px" }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                Test WhatsApp Link
-              </a>
-            </div>
-          </div>
-        )}
-
-      </div>
-
-      {/* FAB WhatsApp */}
-      <a href={waURL(OWNER_WA,"Habari! Admin panel test.")} target="_blank" rel="noopener noreferrer"
-        style={{ position:"fixed", bottom:"24px", right:"16px", width:"56px", height:"56px", background:"#25d366", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 6px 24px rgba(37,211,102,0.5)", textDecoration:"none", zIndex:200 }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      </a>
-    </div>
-  );
+  if(tab==="home")renderHome();
+  if(tab==="catalog")renderCatalog();
+  if(tab==="lessons")renderLessons();
+  if(tab==="settings")renderSettings();
 }
+
+// Home
+function renderHome(){
+  const tr=tiers(),ct=tr[cUser.tier]||DT.silver;
+  document.getElementById("home-greet").textContent="Habari, "+cUser.name.split(" ")[0]+"!";
+  renderHomeTier();
+  document.getElementById("test-list").innerHTML=TESTS.map(t=>`
+    <div class="card" style="margin-bottom:12px;">
+      <div class="rowb" style="margin-bottom:10px;">
+        <div class="row" style="gap:10px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#003366,#005599);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;">${t.name[0]}</div>
+          <div><div style="font-weight:700;font-size:15px;">${esc(t.name)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">📍 ${esc(t.city)}</div></div>
+        </div>
+        <span style="font-size:26px;">${t.e}</span>
+      </div>
+      <p style="color:rgba(255,255,255,0.75);font-size:15px;line-height:1.7;font-style:italic;margin-bottom:10px;">"${esc(t.text)}"</p>
+      <div style="display:flex;gap:2px;">${"★".repeat(t.stars).split("").map(()=>`<span style="color:#C9A84C;font-size:17px;">★</span>`).join("")}</div>
+    </div>`).join("");
+}
+function renderHomeTier(){
+  const tr=tiers(),ct=tr[cUser.tier]||DT.silver;
+  const b=document.getElementById("home-tier-badge");
+  b.style.background=ct.color+"22";b.style.borderColor=ct.border||ct.color+"55";
+  b.innerHTML=`<span>${ct.icon}</span><span style="color:${ct.color};font-size:13px;font-weight:700;">${esc(ct.name)}</span>`;
+}
+function startBanner(){
+  renderBanner();
+  bTimer=setInterval(()=>{bannerIdx=(bannerIdx+1)%BANNERS.length;renderBanner();},4500);
+}
+function renderBanner(){
+  const b=BANNERS[bannerIdx];
+  document.getElementById("banner-bg").style.background=b.grad;
+  document.getElementById("banner-title").textContent=b.title;
+  document.getElementById("banner-sub").textContent=b.sub;
+  document.getElementById("banner-dots").innerHTML=BANNERS.map((_,i)=>`<div onclick="jumpB(${i})" style="width:${i===bannerIdx?"20px":"7px"};height:7px;border-radius:4px;background:${i===bannerIdx?"#fff":"rgba(255,255,255,0.3)"};cursor:pointer;transition:all .3s;"></div>`).join("");
+}
+function jumpB(i){bannerIdx=i;renderBanner();}
+
+// Catalog
+function renderCatalog(){
+  const tr=tiers(),ps=pkgs();
+  document.getElementById("catalog-list").innerHTML=ps.map(pkg=>{
+    const t=tr[pkg.tier]||DT[pkg.tier]||DT.silver;
+    const msg="Habari! Mimi ni "+cUser.name+". Nataka kujua zaidi kuhusu package ya "+t.name+" ("+pkg.price+pkg.period+").";
+    const isG=pkg.tier==="gold";
+    return`<div style="background:#0d1b2e;border:2px solid ${t.border};border-radius:24px;overflow:hidden;margin-bottom:18px;position:relative;">
+      ${pkg.popular?`<div style="position:absolute;top:16px;right:16px;background:#C9A84C;color:#000;font-size:11px;font-weight:900;padding:4px 13px;border-radius:20px;z-index:2;">MAARUFU ⭐</div>`:""}
+      ${pkg.image?`<div style="height:160px;overflow:hidden;"><img src="${esc(pkg.image)}" style="width:100%;height:100%;object-fit:cover;" alt=""/></div>`:""}
+      <div style="background:linear-gradient(135deg,${t.color}15,transparent);padding:24px 20px 16px;">
+        <div class="row" style="gap:10px;margin-bottom:10px;">
+          <span style="font-size:28px;">${t.icon}</span>
+          <div><div style="color:${t.color};font-weight:900;font-size:18px;">${esc(t.name)}</div><div style="color:rgba(255,255,255,0.4);font-size:12px;">Level ${t.level}</div></div>
+        </div>
+        ${pkg.desc?`<p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.6;margin-bottom:10px;">${esc(pkg.desc)}</p>`:""}
+        <div class="row" style="align-items:baseline;gap:5px;">
+          <span style="color:#fff;font-weight:900;font-size:28px;">${esc(pkg.price)}</span>
+          <span style="color:rgba(255,255,255,0.4);font-size:14px;">${esc(pkg.period)}</span>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px;">
+        <div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:16px;margin-bottom:18px;">
+          ${pkg.features.map(f=>`<div class="row" style="gap:10px;margin-bottom:10px;">
+            <div style="width:20px;height:20px;background:${t.color}22;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${t.color};font-size:12px;">✓</div>
+            <span style="color:rgba(255,255,255,0.75);font-size:14px;">${esc(f)}</span>
+          </div>`).join("")}
+        </div>
+        <a href="${wa(OWA,msg)}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:14px;text-decoration:none;font-weight:900;font-size:15px;color:${isG?"#000":"#fff"};background:${isG?"linear-gradient(135deg,#C9A84C,#f0c060)":"linear-gradient(135deg,#003366,#005599)"};box-shadow:0 6px 20px ${t.color}33;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="${isG?"#000":"#fff"}"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Agiza Sasa — WhatsApp
+        </a>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// Lessons
+function renderLessons(){
+  const tr=tiers(),ct=tr[cUser.tier]||DT.silver,ls=lessons();
+  const lb=document.getElementById("les-banner");
+  lb.style.background=ct.color+"12";lb.style.borderColor=ct.border||ct.color+"55";
+  document.getElementById("ltb-icon").textContent=ct.icon;
+  document.getElementById("ltb-name").textContent=ct.name;document.getElementById("ltb-name").style.color=ct.color;
+  document.getElementById("ltb-level").textContent="Unafikia masomo Level 1–"+ct.level;
+  let html="";
+  Object.values(tr).forEach(tier=>{
+    const tl=ls.filter(l=>l.tier===tier.id);if(!tl.length)return;
+    const locked=tier.level>ct.level;
+    html+=`<div style="margin-bottom:28px;">
+      <div class="rowb" style="margin-bottom:14px;">
+        <div class="row" style="gap:9px;">
+          <span style="font-size:20px;">${tier.icon}</span>
+          <div><div style="font-weight:800;font-size:15px;color:${locked?"rgba(255,255,255,0.35)":"#fff"};">${esc(tier.name)}</div><div style="color:rgba(255,255,255,0.3);font-size:12px;">Level ${tier.level} · ${tl.length} masomo ${locked?"🔒":""}</div></div>
+        </div>
+        ${locked?`<a href="${wa(OWA,"Habari! Nataka kupanda hadi "+tier.name+". Niambie zaidi.")}" target="_blank" style="background:${tier.color}18;border:1px solid ${tier.border};border-radius:20px;padding:5px 13px;color:${tier.color};font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">⬆️ Panda</a>`:""}
+      </div>
+      ${tl.map(l=>lCard(l,locked,tier)).join("")}
+    </div>`;
+  });
+  document.getElementById("lessons-list").innerHTML=html;
+}
+function lCard(l,locked,tier){
+  return`<div style="background:#0d1b2e;border:1.5px solid ${locked?"rgba(255,255,255,0.06)":tier.border};border-radius:20px;overflow:hidden;margin-bottom:14px;">
+    <div style="background:${locked?"#0a1020":"linear-gradient(135deg,#003366,#005599)"};padding:20px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+      <div style="flex:1;min-width:0;">
+        <div style="display:inline-flex;align-items:center;gap:5px;background:${tier.color}22;border:1px solid ${tier.color}44;border-radius:20px;padding:3px 10px;margin-bottom:8px;">
+          <span style="font-size:12px;">${tier.icon}</span><span style="color:${tier.color};font-size:11px;font-weight:700;">${esc(tier.sub)}</span>
+        </div>
+        <div style="color:${locked?"rgba(255,255,255,0.35)":"#fff"};font-weight:800;font-size:17px;line-height:1.3;">${esc(l.title)}</div>
+        <div style="color:rgba(255,255,255,0.35);font-size:13px;margin-top:5px;">⏱ ${esc(l.dur)} · 👁 ${esc(l.views)}</div>
+      </div>
+      <div style="font-size:34px;flex-shrink:0;">${locked?"🔒":"🎬"}</div>
+    </div>
+    <div style="padding:16px 18px;">
+      <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:14px;">${esc(l.desc)}</p>
+      ${locked
+        ?`<a href="${wa(OWA,"Habari! Nataka kupanda hadi "+tier.name+". Niambie zaidi.")}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:${tier.color}15;border:1.5px solid ${tier.border};border-radius:12px;color:${tier.color};font-weight:800;font-size:15px;text-decoration:none;">⬆️ Panda hadi ${esc(tier.name)}</a>`
+        :`<button onclick="togLesson(${l.id})" id="lbtn-${l.id}" style="width:100%;padding:14px;background:linear-gradient(135deg,#003366,#005599);border:none;border-radius:12px;color:#fff;font-weight:800;font-size:15px;">▶ Tazama Sasa</button>
+         <div id="lvid-${l.id}" style="display:none;margin-top:12px;border-radius:12px;overflow:hidden;background:#000;"></div>`
+      }
+    </div>
+  </div>`;
+}
+function togLesson(id){
+  const btn=document.getElementById("lbtn-"+id),vid=document.getElementById("lvid-"+id);
+  if(!vid)return;
+  const open=vid.style.display==="block";
+  if(open){vid.style.display="none";vid.innerHTML="";if(btn)btn.textContent="▶ Tazama Sasa";return;}
+  const l=lessons().find(x=>x.id===id);if(!l)return;
+  if(btn)btn.textContent="⏸ Simamisha";
+  vid.style.display="block";
+  if(l.videoUrl){
+    const yt=ytId(l.videoUrl);
+    vid.innerHTML=yt
+      ?`<div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe></div>`
+      :`<video src="${esc(l.videoUrl)}" controls autoplay style="width:100%;display:block;"></video>`;
+  } else {
+    vid.innerHTML=`<div style="position:relative;width:100%;padding-bottom:56.25%;background:#000;"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:44px;margin-bottom:12px;">🎬</div><div style="color:rgba(255,255,255,0.5);font-size:14px;text-align:center;padding:0 20px;line-height:1.6;">Video bado haijawekwa<br/><span style="color:rgba(255,255,255,0.25);font-size:12px;">Admin ataongeza video hivi karibuni</span></div></div></div>`;
+  }
+}
+
+// Settings
+function renderSettings(){
+  const s=rS(),tr=tiers(),t=tr[cUser.tier]||DT.silver;
+  document.getElementById("set-av").textContent=cUser.name[0];document.getElementById("set-av").style.borderColor=t.color;
+  document.getElementById("set-name-d").textContent=cUser.name;document.getElementById("set-phone-d").textContent=cUser.phone;
+  document.getElementById("set-name-inp").value=cUser.name;
+  document.getElementById("set-t-icon").textContent=t.icon;document.getElementById("set-t-name").textContent=t.name;document.getElementById("set-t-name").style.color=t.color;
+  document.getElementById("set-tier-badge").style.background=t.color+"18";document.getElementById("set-tier-badge").style.borderColor=t.border||t.color+"55";
+  document.getElementById("set-pkg-icon").textContent=t.icon;document.getElementById("set-pkg-name").textContent=t.name;document.getElementById("set-pkg-name").style.color=t.color;
+  document.getElementById("set-pkg-card").style.borderColor=t.border||t.color+"44";
+  document.getElementById("set-pkg-lvl").textContent="Level "+t.level+" Access";
+  document.getElementById("set-upgrade").href=wa(OWA,"Habari! Nataka kupanda tier yangu. Sasa nipo "+t.name+". Niambie kuhusu package za juu zaidi.");
+  document.getElementById("set-app-name").textContent=s?.brandName||"SAT";
+  document.getElementById("set-wa-support").href=wa(OWA,"Habari! Mimi ni "+cUser.name+" ("+cUser.phone+"). Ninahitaji msaada.");
+}
+function saveProfile(){
+  const name=document.getElementById("set-name-inp").value.trim()||cUser.name;
+  cUser={...cUser,name};const btn=document.getElementById("save-btn");
+  btn.textContent="✅ Imehifadhiwa!";setTimeout(()=>{btn.textContent="Hifadhi Mabadiliko";},2000);
+  renderSettings();updateHdr();
+}
+
+// Unlock
+function showUnlock(){document.getElementById("unlock-code").value="";document.getElementById("unlock-err").style.display="none";document.getElementById("unlock-ok").style.display="none";document.getElementById("unlock-form").style.display="block";document.getElementById("modal-unlock").style.display="flex";}
+function hideUnlock(){document.getElementById("modal-unlock").style.display="none";}
+function tryUnlock(){
+  const code=document.getElementById("unlock-code").value.trim().toUpperCase();
+  const err=document.getElementById("unlock-err"),s=rS();
+  const otp=s?.otps?.[cUser.id];
+  if(!otp){err.textContent="⚠️ Hakuna namba iliyotolewa kwa akaunti yako. Wasiliana na admin.";err.style.display="block";return;}
+  if(otp.used){err.textContent="⚠️ Namba hii imeshakutumiwa. Omba mpya kwa admin.";err.style.display="block";return;}
+  if(Date.now()>otp.expires){err.textContent="⚠️ Namba imekwisha muda. Omba mpya kwa admin.";err.style.display="block";return;}
+  if(otp.code.toUpperCase()!==code){err.textContent="⚠️ Namba si sahihi. Angalia vizuri uliyopewa.";err.style.display="block";return;}
+  s.otps[cUser.id].used=true;
+  try{localStorage.setItem("sat_store",JSON.stringify(s));}catch{}
+  const up=s.users?.find(u=>u.id===cUser.id);
+  if(up)cUser={...up,isKnown:true};
+  document.getElementById("unlock-form").style.display="none";
+  document.getElementById("unlock-ok").style.display="block";
+  setTimeout(()=>{hideUnlock();updateHdr();if(cTab==="lessons")renderLessons();},1600);
+}
+</script>
+</body>
+</html>
