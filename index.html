@@ -267,13 +267,17 @@ const DL=[{id:1,tier:"silver",title:"Utangulizi wa Facebook Ads",dur:"12:30",vie
 const TESTS=[{name:"Mama Pendo",city:"Dar es Salaam",text:"Mauzo yangu yameongezeka mara 3 baada ya kutumia huduma hii!",stars:5,e:"🛍️"},{name:"Bwana Khalid",city:"Mwanza",text:"Growth package imenisaidia kupata wateja 200+ kwa mwezi mmoja.",stars:5,e:"📈"},{name:"Grace Mollel",city:"Arusha",text:"Professional sana. Picha na video za hali ya juu kabisa!",stars:5,e:"🎬"},{name:"Hassan Juma",city:"Dodoma",text:"Thamani yake ni kubwa mno. Ninaipendekeza kwa kila mtu.",stars:5,e:"💪"},{name:"Amina Saleh",city:"Zanzibar",text:"Facebook Ads zao zimeleta wateja hata wa nje ya Tanzania!",stars:5,e:"🌍"},{name:"Peter Msigwa",city:"Morogoro",text:"Team yao inajibu haraka sana. Support bora kuliko wote.",stars:5,e:"🏆"}];
 const BANNERS=[{title:"Ongeza Mauzo Yako Leo",sub:"Huduma za matangazo ya hali ya juu",grad:"linear-gradient(135deg,#003366,#005599)"},{title:"Special Offer — 20% OFF",sub:"Kwa wateja wapya wa mwezi huu",grad:"linear-gradient(135deg,#7c2d12,#C9A84C)"},{title:"Afrika Mashariki & Zaidi",sub:"Wateja kutoka mataifa mengi",grad:"linear-gradient(135deg,#064e3b,#065f46)"}];
 
-function rS(){try{const r=localStorage.getItem("sat_store");return r?JSON.parse(r):null;}catch{return null;}}
+function rS(){try{const r=localStorage.getItem("sat_store");if(!r)return null;const p=JSON.parse(r);return p;}catch{return null;}}
+function saveSession(u){try{localStorage.setItem("sat_session",JSON.stringify(u));}catch{}}
+function loadSession(){try{const r=localStorage.getItem("sat_session");return r?JSON.parse(r):null;}catch{return null;}}
+function clearSession(){try{localStorage.removeItem("sat_session");}catch{}}
 function wa(p,m){return"https://wa.me/"+p.replace(/\D/g,"")+"?text="+encodeURIComponent(m);}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function tiers(){const s=rS();return s?.tiers||DT;}
 function pkgs(){const s=rS();return s?.packages||DPKG;}
 function lessons(){const s=rS();return s?.lessons||DL;}
 function ytId(url){const m=(url||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+function gdId(url){const m=(url||"").match(/\/file\/d\/([a-zA-Z0-9_-]+)/);return m?m[1]:null;}
 
 let cUser=null,cTab="home",bannerIdx=0,bTimer=null,pTimer=null;
 
@@ -286,7 +290,16 @@ window.onload=function(){
   const iv=setInterval(()=>{
     const p=Math.min(100,((Date.now()-start)/3000)*100);
     document.getElementById("sp-bar").style.width=p+"%";
-    if(p>=100){clearInterval(iv);setTimeout(()=>{const sp=document.getElementById("splash");sp.style.opacity="0";setTimeout(()=>{sp.style.display="none";showLogin();},400);},200);}
+    if(p>=100){clearInterval(iv);setTimeout(()=>{const sp=document.getElementById("splash");sp.style.opacity="0";setTimeout(()=>{sp.style.display="none";
+      // Try auto-login from saved session
+      const sess=loadSession();
+      if(sess){
+        const s=rS();
+        const fresh=s?.users?.find(u=>u.id===sess.id);
+        cUser=fresh?{...fresh,isKnown:true}:sess;
+        initApp();
+      } else {showLogin();}
+    },400);},200);}
   },30);
 };
 
@@ -336,12 +349,14 @@ function doLogin(){
     cUser={id:Date.now(),name,phone:full,tier:"silver",active:true,isKnown:false};
   }
   document.getElementById("screen-login").style.display="none";
+  saveSession(cUser);
   initApp();
 }
 
 function initApp(){
   const s=rS(),fresh=s?.users?.find(u=>u.id===cUser?.id);
   if(fresh)cUser={...fresh,isKnown:true};
+  saveSession(cUser);
   updateHdr();
   document.getElementById("screen-app").style.display="block";
   document.getElementById("fab-wa").href=wa(OWA,"Habari! Mimi ni "+cUser.name+" ("+cUser.phone+"). Ninahitaji msaada.");
@@ -351,7 +366,7 @@ function initApp(){
   pTimer=setInterval(()=>{
     const s=rS();if(!s||!cUser)return;
     const up=s.users?.find(u=>u.id===cUser.id);
-    if(up&&up.tier!==cUser.tier){cUser={...cUser,tier:up.tier};updateHdr();if(cTab==="lessons")renderLessons();if(cTab==="home")renderHomeTier();}
+    if(up&&up.tier!==cUser.tier){cUser={...cUser,tier:up.tier};saveSession(cUser);updateHdr();if(cTab==="lessons")renderLessons();if(cTab==="home")renderHomeTier();}
   },3000);
 }
 
@@ -367,7 +382,7 @@ function updateHdr(){
 }
 
 function doLogout(){
-  clearInterval(pTimer);clearInterval(bTimer);cUser=null;
+  clearInterval(pTimer);clearInterval(bTimer);clearSession();cUser=null;
   document.getElementById("screen-app").style.display="none";
   document.getElementById("lg-phone").value="";document.getElementById("lg-name").value="";
   document.getElementById("ret-card").style.display="none";document.getElementById("new-wrap").style.display="none";
@@ -435,7 +450,7 @@ function renderCatalog(){
     const isG=pkg.tier==="gold";
     return`<div style="background:#0d1b2e;border:2px solid ${t.border};border-radius:24px;overflow:hidden;margin-bottom:18px;position:relative;">
       ${pkg.popular?`<div style="position:absolute;top:16px;right:16px;background:#C9A84C;color:#000;font-size:11px;font-weight:900;padding:4px 13px;border-radius:20px;z-index:2;">MAARUFU ⭐</div>`:""}
-      ${pkg.image?`<div style="height:160px;overflow:hidden;"><img src="${esc(pkg.image)}" style="width:100%;height:100%;object-fit:cover;" alt=""/></div>`:""}
+      ${pkg.image?`<div style="height:220px;overflow:hidden;"><img src="${esc(pkg.image)}" style="width:100%;height:100%;object-fit:cover;" alt=""/></div>`:""}
       <div style="background:linear-gradient(135deg,${t.color}15,transparent);padding:24px 20px 16px;">
         <div class="row" style="gap:10px;margin-bottom:10px;">
           <span style="font-size:28px;">${t.icon}</span>
@@ -519,10 +534,14 @@ function togLesson(id){
   if(btn)btn.textContent="⏸ Simamisha";
   vid.style.display="block";
   if(l.videoUrl){
-    const yt=ytId(l.videoUrl);
-    vid.innerHTML=yt
-      ?`<div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe></div>`
-      :`<video src="${esc(l.videoUrl)}" controls autoplay style="width:100%;display:block;"></video>`;
+    const yt=ytId(l.videoUrl),gd=gdId(l.videoUrl);
+    if(yt){
+      vid.innerHTML=`<div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe></div>`;
+    } else if(gd){
+      vid.innerHTML=`<div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://drive.google.com/file/d/${gd}/preview" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay;fullscreen" allowfullscreen></iframe></div>`;
+    } else {
+      vid.innerHTML=`<video src="${esc(l.videoUrl)}" controls autoplay style="width:100%;display:block;"></video>`;
+    }
   } else {
     vid.innerHTML=`<div style="position:relative;width:100%;padding-bottom:56.25%;background:#000;"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:44px;margin-bottom:12px;">🎬</div><div style="color:rgba(255,255,255,0.5);font-size:14px;text-align:center;padding:0 20px;line-height:1.6;">Video bado haijawekwa<br/><span style="color:rgba(255,255,255,0.25);font-size:12px;">Admin ataongeza video hivi karibuni</span></div></div></div>`;
   }
